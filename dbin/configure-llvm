@@ -7,6 +7,7 @@ scriptname=lli_undef_fix/git/dbin/configure-llvm
 case `hostname` in
    dyson)
       PROJ_DIR=/uusoc/scratch/dyson/cas/edu/uut/lli_undef_fix
+      host_specific_options='--disable-compiler-version-checks'
       ;;
    *)
       echo error: do not recognize host `hostname`.
@@ -14,8 +15,13 @@ case `hostname` in
       ;;
 esac
 
+# TODO2: consider running `gcc --version`, and if version is 4.6, then
+# setting --disable-compiler-version-checks. 
+
+
 cd $PROJ_DIR/git/llvm
-exec $PROJ_DIR/git/llvm/configure --prefix $PROJ_DIR/live "$@"
+exec $PROJ_DIR/git/llvm/configure --prefix $PROJ_DIR/live \
+      $host_specific_options "$@"
 
 # end of script
 
