@@ -14,6 +14,7 @@ case `hostname` in
       ;;
 esac
 
+cd $PROJ_DIR/git/llvm
 exec $PROJ_DIR/git/llvm/configure --prefix $PROJ_DIR/live "$@"
 
 # end of script
