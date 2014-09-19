@@ -1,0 +1,20 @@
+#!/bin/sh
+# Run llvm's configure script with customizations necessary for the current
+# development host.
+
+scriptname=lli_undef_fix/git/dbin/configure-llvm
+
+case `hostname` in
+   dyson)
+      PROJ_DIR=/uusoc/scratch/dyson/cas/edu/uut/lli_undef_fix
+      ;;
+   *)
+      echo error: do not recognize host `hostname`.
+      exit -1
+      ;;
+esac
+
+exec $PROJ_DIR/git/llvm/configure --prefix $PROJ_DIR/live "$@"
+
+# end of script
+
