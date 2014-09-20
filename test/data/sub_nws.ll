@@ -33,13 +33,11 @@ lor.end:                                          ; preds = %entry
    store i32 %lor.ext, i32* @x1, align 4, !tbaa !1
    br i1 %tobool, label %if.then, label %if.end
 
-if.then:                                          ; preds = 
-%lor.end.thread, %lor.end
+if.then:                                  ; preds = %lor.end.thread, %lor.end
    %putchar = tail call i32 @putchar(i32 120) #1
    br label %if.end
 
-if.end:                                           ; preds = %if.then, 
-%lor.end
+if.end:                                   ; preds = %if.then, %lor.end
    ret i32 0
 }
 
@@ -59,6 +57,4 @@ attributes #1 = { nounwind }
 !2 = metadata !{metadata !"int", metadata !3, i64 0}
 !3 = metadata !{metadata !"omnipotent char", metadata !4, i64 0}
 !4 = metadata !{metadata !"Simple C/C++ TBAA"}
-
-
 
