@@ -4,10 +4,12 @@
 
 scriptname=lli_undef_fix/git/dbin/configure-llvm
 
+
+
 case `hostname` in
    dyson)
       PROJ_DIR=/uusoc/scratch/dyson/cas/edu/uut/lli_undef_fix
-      host_specific_options='--disable-compiler-version-checks'
+      host_specific_options=""
       ;;
    *)
       echo error: do not recognize host `hostname`.
@@ -18,6 +20,8 @@ esac
 # TODO2: consider running `gcc --version`, and if version is 4.6, then
 # setting --disable-compiler-version-checks. 
 
+# Note: configure's --disable-compiler-version-checks flag doesn't work with
+# gcc4.6 because the build process requires compiler support for C++2011.
 
 cd $PROJ_DIR/git/llvm
 exec $PROJ_DIR/git/llvm/configure --prefix $PROJ_DIR/live \
