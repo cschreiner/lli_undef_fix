@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <limits>
+#include <stdio.h> //;;
 using namespace llvm;
 
 #define DEBUG_TYPE "apint"
@@ -208,7 +209,9 @@ APInt& APInt::operator++() {
 /// is 1 if "borrowing" exhausted the digits in x, or 0 if x was not exhausted.
 /// In other words, if y > x then this function returns 1, otherwise 0.
 /// @returns the borrow out of the subtraction
+/* CAS TODO2: how does this function react to overflow? */
 static bool sub_1(uint64_t x[], unsigned len, uint64_t y) {
+  printf ( "starting APInt's sub_1()\n" );;
   for (unsigned i = 0; i < len; ++i) {
     uint64_t X = x[i];
     x[i] -= y;
@@ -224,6 +227,8 @@ static bool sub_1(uint64_t x[], unsigned len, uint64_t y) {
 
 /// @brief Prefix decrement operator. Decrements the APInt by one.
 APInt& APInt::operator--() {
+  /* CAS TODO2: add a trap here for the int being already at its minimum value */
+  printf ( "starting APInt::operator--()\n" );;
   if (isSingleWord())
     --VAL;
   else
@@ -237,6 +242,7 @@ APInt& APInt::operator--() {
 /// @brief General addition of 64-bit integer arrays
 static bool add(uint64_t *dest, const uint64_t *x, const uint64_t *y,
                 unsigned len) {
+  /* CAS TODO2: add a trap here for the int being already at its max value */
   bool carry = false;
   for (unsigned i = 0; i< len; ++i) {
     uint64_t limit = std::min(x[i],y[i]); // must come first in case dest == x
@@ -265,6 +271,7 @@ APInt& APInt::operator+=(const APInt& RHS) {
 static bool sub(uint64_t *dest, const uint64_t *x, const uint64_t *y,
                 unsigned len) {
   bool borrow = false;
+  printf ( "starting APInt's sub()\n" );;
   for (unsigned i = 0; i < len; ++i) {
     uint64_t x_tmp = borrow ? x[i] - 1 : x[i];
     borrow = y[i] > x_tmp || (borrow && x[i] == 0);
@@ -277,6 +284,7 @@ static bool sub(uint64_t *dest, const uint64_t *x, const uint64_t *y,
 /// @returns this, after subtraction
 /// @brief Subtraction assignment operator.
 APInt& APInt::operator-=(const APInt& RHS) {
+  printf ( "starting APInt::operator-=()\n" );;
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
   if (isSingleWord())
     VAL -= RHS.VAL;
@@ -477,9 +485,13 @@ APInt APInt::operator+(const APInt& RHS) const {
 }
 
 APInt APInt::operator-(const APInt& RHS) const {
+  printf ("starting APInt::operator-().\n" );;
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
-  if (isSingleWord())
+  if (isSingleWord())  {
+    printf ("   isSingleWord()==true\n" );;
     return APInt(BitWidth, VAL - RHS.VAL);
+  }
+  printf ("   getNumWords()=%d\n", getNumWords() );;
   APInt Result(BitWidth, 0);
   sub(Result.pVal, this->pVal, RHS.pVal, getNumWords());
   return Result.clearUnusedBits();
@@ -2009,6 +2021,7 @@ APInt APInt::uadd_ov(const APInt &RHS, bool &Overflow) const {
 
 APInt APInt::ssub_ov(const APInt &RHS, bool &Overflow) const {
   APInt Res = *this - RHS;
+  printf ("starting APInt::ssub_ov().\n" );;
   Overflow = isNonNegative() != RHS.isNonNegative() &&
              Res.isNonNegative() != isNonNegative();
   return Res;
@@ -2016,6 +2029,7 @@ APInt APInt::ssub_ov(const APInt &RHS, bool &Overflow) const {
 
 APInt APInt::usub_ov(const APInt &RHS, bool &Overflow) const {
   APInt Res = *this-RHS;
+  printf ("starting APInt::usub_ov().\n" );;
   Overflow = Res.ugt(*this);
   return Res;
 }
