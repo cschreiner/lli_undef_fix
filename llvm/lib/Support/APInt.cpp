@@ -477,8 +477,13 @@ APInt APInt::operator*(const APInt& RHS) const {
 
 APInt APInt::operator+(const APInt& RHS) const {
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
-  if (isSingleWord())
-    return APInt(BitWidth, VAL + RHS.VAL);
+  if (isSingleWord())  {
+    // assume unsigned
+    APInt result= APInt(BitWidth, VAL + RHS.VAL);
+    assert( ((result.VAL > VAL) || (result.VAL > RHS.VAL) ) && 
+    	  "Operation overflowed" );
+    return result;
+  }
   APInt Result(BitWidth, 0);
   add(Result.pVal, this->pVal, RHS.pVal, getNumWords());
   return Result.clearUnusedBits();
@@ -489,6 +494,14 @@ APInt APInt::operator-(const APInt& RHS) const {
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
   if (isSingleWord())  {
     printf ("   isSingleWord()==true\n" );;
+    printf ("   VAL=%lu, getActiveBits()=%u, BitWidth=%lu \n", 
+    	 VAL, getActiveBits(), (unsigned long)BitWidth  );;
+    printf ("   RHS: VAL=%lu, getActiveBits()=%u, BitWidth=%lu \n", 
+    	 RHS.VAL, RHS.getActiveBits(), (unsigned long)RHS.BitWidth  );;
+    printf ("   got to mercury\n" );;
+    //asdf 
+    // assume unsigned
+    assert( (VAL > RHS.VAL) && "Operation would underflow" );
     return APInt(BitWidth, VAL - RHS.VAL);
   }
   printf ("   getNumWords()=%d\n", getNumWords() );;
