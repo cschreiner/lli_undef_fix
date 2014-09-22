@@ -1254,6 +1254,10 @@ public:
   /// @{
 
   /// \brief Return the number of bits in the APInt.
+  ///
+  /// CAS TODO2: does this return the number of bits in this
+  /// instance's official width, or the number of bits that are used?
+  /// (Some other functions work with the number of bits that are used.)
   unsigned getBitWidth() const { return BitWidth; }
 
   /// \brief Get the number of words.
