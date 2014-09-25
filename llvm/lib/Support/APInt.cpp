@@ -501,10 +501,16 @@ APInt APInt::operator-(const APInt& RHS) const {
 
     APInt result (BitWidth, VAL - RHS.VAL);
     result.unsignedWrapHappened= ( VAL < RHS.VAL ); // check for -overflow
-    /* TODO: add a similar check for signedWrapHappened. */
+    /* TODO: add a similar check for signedWrapHappened. Use
+       getSignedMinValue(numBits) and getSignedMaxValue(numBits) as needed. 
+    */
+    result.signedWrapHappened= (int64_t)RHS.VAL < 0 ? 
+	(int64_t)result.VAL > (int64_t)VAL : 
+	(int64_t)result.VAL < (int64_t)VAL;
     result.signedWrapHappened= true;;
     printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
 	   result.signedWrapHappened, result.unsignedWrapHappened );;
+    printf ("   result's VAL=%lu\n", result.VAL );;
     return result;
     //return APInt(BitWidth, VAL - RHS.VAL); /* TODO: delete this */
   }
