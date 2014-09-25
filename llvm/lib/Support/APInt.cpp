@@ -480,8 +480,8 @@ APInt APInt::operator+(const APInt& RHS) const {
   if (isSingleWord())  {
     // assume unsigned
     APInt result= APInt(BitWidth, VAL + RHS.VAL);
-    assert( ((result.VAL > VAL) || (result.VAL > RHS.VAL) ) && 
-    	  "Operation overflowed" );
+    assert( ((result.VAL >= VAL) || (result.VAL >= RHS.VAL) ) && 
+    	  "Operation +overflowed" );
     return result;
   }
   APInt Result(BitWidth, 0);
@@ -498,10 +498,9 @@ APInt APInt::operator-(const APInt& RHS) const {
     	 VAL, getActiveBits(), (unsigned long)BitWidth  );;
     printf ("   RHS: VAL=%lu, getActiveBits()=%u, BitWidth=%lu \n", 
     	 RHS.VAL, RHS.getActiveBits(), (unsigned long)RHS.BitWidth  );;
-    printf ("   got to mercury\n" );;
-    //asdf 
+
     // assume unsigned
-    assert( (VAL > RHS.VAL) && "Operation would underflow" );
+    assert( (VAL >= RHS.VAL) && "Operation would -overflow" );
     return APInt(BitWidth, VAL - RHS.VAL);
   }
   printf ("   getNumWords()=%d\n", getNumWords() );;
