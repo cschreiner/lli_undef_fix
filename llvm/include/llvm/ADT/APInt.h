@@ -666,6 +666,9 @@ public:
     if (isSingleWord() && RHS.isSingleWord()) {
       VAL = RHS.VAL;
       BitWidth = RHS.BitWidth;
+      signedWrapHappened= RHS.signedWrapHappened;
+      unsignedWrapHappened= RHS.unsignedWrapHappened;
+      wrapMagicNumber= RHS.wrapMagicNumber;; // used for debugging
       return clearUnusedBits();
     }
 
