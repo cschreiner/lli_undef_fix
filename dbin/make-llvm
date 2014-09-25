@@ -11,7 +11,7 @@ cd $BUILD_ROOT
 echo pwd=`pwd` #;;
 
 start_time=`date +%s`
-make "$@"
+make -j 3 "$@"
 make_status=$?
 
 if [ $make_status -eq 0 ]; then
