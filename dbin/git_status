@@ -1,0 +1,6 @@
+#!/bin/sh
+# run 'git status' without hundreds of temporary files created by the LLVM
+# build process getting listed as "files needing to be added".
+
+git status  "$@" | grep -vE -e /$ -e \.inc$ -e bindings/ -e ChildTarget/
+
