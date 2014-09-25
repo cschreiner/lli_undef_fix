@@ -28,7 +28,7 @@ elapsed_s=$(( $stop_time - $start_time ))
 elapsed_min=$(( $elapsed_s / 60 ))
 elapsed_min_rem_s=$(( $elapsed_s % 60 ))
 
-echo exit status=$make_status
+echo build status=$make_status \(should be 0\)
 echo build time ${elapsed_min}:$elapsed_min_rem_s \($elapsed_s s\)
 
 # ---------------------------------------------------------------------------
