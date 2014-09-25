@@ -29,7 +29,8 @@ elapsed_min=$(( $elapsed_s / 60 ))
 elapsed_min_rem_s=$(( $elapsed_s % 60 ))
 
 echo build status=$make_status \(should be 0\)
-echo build time ${elapsed_min}:$elapsed_min_rem_s \($elapsed_s s\)
+printf "build time %d:%2.2d (%d s)\n" \
+      $elapsed_min $elapsed_min_rem_s $elapsed_s 
 
 # ---------------------------------------------------------------------------
 # end of script
