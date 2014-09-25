@@ -480,8 +480,10 @@ APInt APInt::operator+(const APInt& RHS) const {
   if (isSingleWord())  {
     // assume unsigned
     APInt result= APInt(BitWidth, VAL + RHS.VAL);
-    assert( ((result.VAL >= VAL) || (result.VAL >= RHS.VAL) ) && 
-    	  "Operation +overflowed" );
+    result.unsignedWrapHappened= ((result.VAL >= VAL) || (result.VAL >= RHS.VAL) );
+    result.signedWrapHappened= (int64_t)RHS.VAL < 0 ? 
+	(int64_t)result.VAL > (int64_t)VAL : 
+	(int64_t)result.VAL < (int64_t)VAL;
     return result;
   }
   APInt Result(BitWidth, 0);
@@ -502,14 +504,18 @@ APInt APInt::operator-(const APInt& RHS) const {
     APInt result (BitWidth, VAL - RHS.VAL);
     result.unsignedWrapHappened= ( VAL < RHS.VAL ); // check for -overflow
     /* TODO: add a similar check for signedWrapHappened. Use
-       getSignedMinValue(numBits) and getSignedMaxValue(numBits) as needed. 
+       getSignedMinValue(numBits) and getSignedMaxValue(numBits) as
+       needed.  The below expression was originally designed for
+       addition, check the adaption for subtraction.
     */
-    result.signedWrapHappened= (int64_t)RHS.VAL < 0 ? 
+    result.signedWrapHappened= (int64_t)RHS.VAL > 0 ? 
 	(int64_t)result.VAL > (int64_t)VAL : 
 	(int64_t)result.VAL < (int64_t)VAL;
     result.signedWrapHappened= true;;
     printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
 	   result.signedWrapHappened, result.unsignedWrapHappened );;
+    result.wrapMagicNumber= 7707177;;
+    printf ("   result's wrapMagicNumber=%d\n", result.wrapMagicNumber );;
     printf ("   result's VAL=%lu\n", result.VAL );;
     return result;
     //return APInt(BitWidth, VAL - RHS.VAL); /* TODO: delete this */
