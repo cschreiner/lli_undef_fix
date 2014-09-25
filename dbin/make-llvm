@@ -9,8 +9,28 @@ BUILD_ROOT=/uusoc/scratch/dyson/cas/edu/uut/lli_undef_fix/git/llvm
 
 cd $BUILD_ROOT
 echo pwd=`pwd` #;;
-make "$@"
-make install
+
+start_time=`date +%s`
+#;;make "$@"
+#;;make install
+sleep 5 #;;
+for ii in a b c d; do #;;
+  sleep 15 #;;
+  echo -n . #;;
+done #;;
+echo " " #;;
+make_status=$?
+
+
+# compute build time
+stop_time=`date +%s`
+
+elapsed_s=$(( $stop_time - $start_time ))
+elapsed_min=$(( $elapsed_s / 60 ))
+elapsed_min_rem_s=$(( $elapsed_s % 60 ))
+
+echo exit status=$make_status
+echo build time ${elapsed_min}:$elapsed_min_rem_s \($elapsed_s s\)
 
 # ---------------------------------------------------------------------------
 # end of script
