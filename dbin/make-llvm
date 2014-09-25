@@ -11,16 +11,15 @@ cd $BUILD_ROOT
 echo pwd=`pwd` #;;
 
 start_time=`date +%s`
-#;;make "$@"
-#;;make install
-sleep 5 #;;
-for ii in a b c d; do #;;
-  sleep 15 #;;
-  echo -n . #;;
-done #;;
-echo " " #;;
+make "$@"
 make_status=$?
 
+if [ $make_status -eq 0 ]; then
+   echo " "
+   echo ====================================================================
+   make install
+   make_status=$?
+fi
 
 # compute build time
 stop_time=`date +%s`
