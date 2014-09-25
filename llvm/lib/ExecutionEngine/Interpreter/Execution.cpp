@@ -789,7 +789,8 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
       printf("   R.IntVal.didSignedWrap=%d, didUnsignedWrap=%d\n", 
 	  R.IntVal.didSignedWrap(), R.IntVal.didUnsignedWrap() );;
       printf ("   R's VAL=%lu\n", R.IntVal.getZExtValue() );;
-      printf ("   R's wrapMagicNumber=%d\n", R.IntVal.getWrapMagicNumber() );;
+      printf ("   R's wrapMagicNumber=%d, R's addr=%p. \n", 
+	  R.IntVal.getWrapMagicNumber(), &(R.IntVal) );;
       assert ( !(I.hasNoUnsignedWrap() && R.IntVal.didUnsignedWrap() ) );  
       printf("   got to case Sub's mercury\n");;
       assert ( !(I.hasNoSignedWrap() && R.IntVal.didSignedWrap() ) );  

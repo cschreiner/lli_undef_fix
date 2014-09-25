@@ -513,9 +513,10 @@ APInt APInt::operator-(const APInt& RHS) const {
 	(int64_t)result.VAL < (int64_t)VAL;
     result.signedWrapHappened= true;;
     printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
-	   result.signedWrapHappened, result.unsignedWrapHappened );;
+	result.signedWrapHappened, result.unsignedWrapHappened );;
     result.wrapMagicNumber= 7707177;;
-    printf ("   result's wrapMagicNumber=%d\n", result.wrapMagicNumber );;
+    printf ("   result's wrapMagicNumber=%d, result's address=%p.\n", 
+	result.wrapMagicNumber, &result );;
     printf ("   result's VAL=%lu\n", result.VAL );;
     return result;
     //return APInt(BitWidth, VAL - RHS.VAL); /* TODO: delete this */
