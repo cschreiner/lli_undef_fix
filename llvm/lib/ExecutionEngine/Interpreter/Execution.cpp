@@ -694,7 +694,6 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
 
     // Macros to execute binary operation 'OP' over integer vectors
 #define INTEGER_VECTOR_OPERATION(OP)                               \
-    printf ("starting INTEGER_VECTOR_OPERATION()\n" );;            \
     for (unsigned i = 0; i < R.AggregateVal.size(); ++i)           \
       R.AggregateVal[i].IntVal =                                   \
       Src1.AggregateVal[i].IntVal OP Src2.AggregateVal[i].IntVal;
@@ -774,11 +773,24 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
       printf("   got to case Instruction::Add\n");;
       printf("   nsw=%d, nuw=%d\n", I.hasNoSignedWrap(), I.hasNoUnsignedWrap() );;
       R.IntVal = Src1.IntVal + Src2.IntVal; 
+      printf("   R.IntVal.didSignedWrap=%d, didUnsignedWrap=%d\n", 
+	  R.IntVal.didSignedWrap(), R.IntVal.didUnsignedWrap() );;
+      assert ( !(I.hasNoUnsignedWrap() && R.IntVal.didUnsignedWrap() ) );  
+      printf("   got to Add's mercury\n");;
+      assert ( !(I.hasNoSignedWrap() && R.IntVal.didSignedWrap() ) );  
+      printf("   got to Add's venus\n");;
       break;
     case Instruction::Sub:   
       printf("   got to case Instruction::Sub\n");;
       printf("   nsw=%d, nuw=%d\n", I.hasNoSignedWrap(), I.hasNoUnsignedWrap() );;
       R.IntVal = Src1.IntVal - Src2.IntVal; 
+      printf("   R.IntVal.didSignedWrap=%d, didUnsignedWrap=%d\n", 
+	  R.IntVal.didSignedWrap(), R.IntVal.didUnsignedWrap() );;
+      assert ( !(I.hasNoUnsignedWrap() && R.IntVal.didUnsignedWrap() ) );  
+      printf("   got to case Sub's mercury\n");;
+      assert ( !(I.hasNoSignedWrap() && R.IntVal.didSignedWrap() ) );  
+      printf("   got to case Sub's venus\n");;
+      //asdf
       break;
     case Instruction::Mul:   R.IntVal = Src1.IntVal * Src2.IntVal; break;
     case Instruction::FAdd:  executeFAddInst(R, Src1, Src2, Ty); break;
