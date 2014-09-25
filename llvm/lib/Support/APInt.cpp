@@ -499,9 +499,14 @@ APInt APInt::operator-(const APInt& RHS) const {
     printf ("   RHS: VAL=%lu, getActiveBits()=%u, BitWidth=%lu \n", 
     	 RHS.VAL, RHS.getActiveBits(), (unsigned long)RHS.BitWidth  );;
 
-    // assume unsigned
-    assert( (VAL >= RHS.VAL) && "Operation would -overflow" );
-    return APInt(BitWidth, VAL - RHS.VAL);
+    APInt result (BitWidth, VAL - RHS.VAL);
+    result.unsignedWrapHappened= ( VAL < RHS.VAL ); // check for -overflow
+    /* TODO: add a similar check for signedWrapHappened. */
+    result.signedWrapHappened= true;;
+    printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
+	   result.signedWrapHappened, result.unsignedWrapHappened );;
+    return result;
+    //return APInt(BitWidth, VAL - RHS.VAL); /* TODO: delete this */
   }
   printf ("   getNumWords()=%d\n", getNumWords() );;
   APInt Result(BitWidth, 0);
