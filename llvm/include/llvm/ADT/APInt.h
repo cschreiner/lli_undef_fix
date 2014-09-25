@@ -75,6 +75,13 @@ const unsigned int integerPartWidth =
 class APInt {
   unsigned BitWidth; ///< The number of bits in this APInt.
 
+  /* TODO: find some way to clear these in the constructor.  For now,
+     I'm assuming they default to false.  This may be a bad
+     assumption, fix it. 
+  */
+  bool signedWrapHappened;
+  bool unsignedWrapHappened;
+
   /// This union is used to store the integer value. When the
   /// integer bit-width <= 64, it uses VAL, otherwise it uses pVal.
   union {
@@ -300,6 +307,14 @@ public:
   /// This is useful for object deserialization (pair this with the static
   ///  method Read).
   explicit APInt() : BitWidth(1) {}
+
+  /// \brief Returns whether this instance's value was created by an operation
+  /// that did a signed wraparound.
+  inline bool didSignedWrap() const { return signedWrapHappened; }
+
+  /// \brief Returns whether this instance's value was created by an operation
+  /// that did an unsigned wraparound.
+  inline bool didUnsignedWrap() const { return unsignedWrapHappened; }
 
   /// \brief Returns whether this instance allocated memory.
   bool needsCleanup() const { return !isSingleWord(); }
