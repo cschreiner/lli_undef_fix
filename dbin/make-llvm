@@ -2,12 +2,13 @@
 # build llvm and install it
 
 
-BUILT_ROOT=/uusoc/scratch/dyson/cas/edu/uut/lli_undef_fix/git/llvm
+BUILD_ROOT=/uusoc/scratch/dyson/cas/edu/uut/lli_undef_fix/git/llvm
 # TODO: change to use PROJ_ROOT to compute the BUILD_ROOT directory.  This
 # may mean that the setup script needs to set the PROJ_ROOT environment
 # variable.
 
 cd $BUILD_ROOT
+echo pwd=`pwd` #;;
 make "$@"
 make install
 
