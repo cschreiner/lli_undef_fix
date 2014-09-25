@@ -25,6 +25,7 @@
 #include "llvm/Support/MathExtras.h"
 #include <algorithm>
 #include <cmath>
+#include <stdio.h> //;;
 using namespace llvm;
 
 #define DEBUG_TYPE "interpreter"
@@ -684,6 +685,8 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
   GenericValue Src2 = getOperandValue(I.getOperand(1), SF);
   GenericValue R;   // Result
 
+  printf("starting Interpreter::visitBinaryOperator(BinaryOperator &)...\n");
+
   // First process vector operation
   if (Ty->isVectorTy()) {
     assert(Src1.AggregateVal.size() == Src2.AggregateVal.size());
@@ -691,6 +694,7 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
 
     // Macros to execute binary operation 'OP' over integer vectors
 #define INTEGER_VECTOR_OPERATION(OP)                               \
+    printf ("starting INTEGER_VECTOR_OPERATION()\n" );;            \
     for (unsigned i = 0; i < R.AggregateVal.size(); ++i)           \
       R.AggregateVal[i].IntVal =                                   \
       Src1.AggregateVal[i].IntVal OP Src2.AggregateVal[i].IntVal;
@@ -766,8 +770,16 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
       dbgs() << "Don't know how to handle this binary operator!\n-->" << I;
       llvm_unreachable(nullptr);
       break;
-    case Instruction::Add:   R.IntVal = Src1.IntVal + Src2.IntVal; break;
-    case Instruction::Sub:   R.IntVal = Src1.IntVal - Src2.IntVal; break;
+    case Instruction::Add:   
+      printf("   got to case Instruction::Add\n");;
+      R.IntVal = Src1.IntVal + Src2.IntVal; 
+      break;
+    case Instruction::Sub:   
+      printf("   got to case Instruction::Sub\n");;
+      if ( test_for_nsw ) {
+      }
+      R.IntVal = Src1.IntVal - Src2.IntVal; 
+      break;
     case Instruction::Mul:   R.IntVal = Src1.IntVal * Src2.IntVal; break;
     case Instruction::FAdd:  executeFAddInst(R, Src1, Src2, Ty); break;
     case Instruction::FSub:  executeFSubInst(R, Src1, Src2, Ty); break;
@@ -2111,6 +2123,7 @@ void Interpreter::callFunction(Function *F,
 
 
 void Interpreter::run() {
+  printf( "starting Interpreter::run()\n");;
   while (!ECStack.empty()) {
     // Interpret a single instruction & increment the "PC".
     ExecutionContext &SF = ECStack.back();  // Current stack frame
