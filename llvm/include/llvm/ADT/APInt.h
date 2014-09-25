@@ -81,6 +81,7 @@ class APInt {
   */
   bool signedWrapHappened;
   bool unsignedWrapHappened;
+  int wrapMagicNumber;; // used for debugging
 
   /// This union is used to store the integer value. When the
   /// integer bit-width <= 64, it uses VAL, otherwise it uses pVal.
@@ -315,6 +316,8 @@ public:
   /// \brief Returns whether this instance's value was created by an operation
   /// that did an unsigned wraparound.
   inline bool didUnsignedWrap() const { return unsignedWrapHappened; }
+  inline int getWrapMagicNumber() const { return wrapMagicNumber;; }
+
 
   /// \brief Returns whether this instance allocated memory.
   bool needsCleanup() const { return !isSingleWord(); }
