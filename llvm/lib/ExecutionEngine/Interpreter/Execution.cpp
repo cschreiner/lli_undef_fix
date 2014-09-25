@@ -772,12 +772,12 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
       break;
     case Instruction::Add:   
       printf("   got to case Instruction::Add\n");;
+      printf("   nsw=%d, nuw=%d\n", I.hasNoSignedWrap(), I.hasNoUnsignedWrap() );;
       R.IntVal = Src1.IntVal + Src2.IntVal; 
       break;
     case Instruction::Sub:   
       printf("   got to case Instruction::Sub\n");;
-      if ( test_for_nsw ) {
-      }
+      printf("   nsw=%d, nuw=%d\n", I.hasNoSignedWrap(), I.hasNoUnsignedWrap() );;
       R.IntVal = Src1.IntVal - Src2.IntVal; 
       break;
     case Instruction::Mul:   R.IntVal = Src1.IntVal * Src2.IntVal; break;
