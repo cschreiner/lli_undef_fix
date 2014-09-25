@@ -786,6 +786,7 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
       R.IntVal = Src1.IntVal - Src2.IntVal; 
       printf("   R.IntVal.didSignedWrap=%d, didUnsignedWrap=%d\n", 
 	  R.IntVal.didSignedWrap(), R.IntVal.didUnsignedWrap() );;
+      printf ("   R's VAL=%lu\n", R.IntVal.getZExtValue() );;
       assert ( !(I.hasNoUnsignedWrap() && R.IntVal.didUnsignedWrap() ) );  
       printf("   got to case Sub's mercury\n");;
       assert ( !(I.hasNoSignedWrap() && R.IntVal.didSignedWrap() ) );  
