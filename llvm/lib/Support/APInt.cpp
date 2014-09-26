@@ -154,6 +154,7 @@ APInt& APInt::AssignSlowCase(const APInt& RHS) {
 }
 
 APInt& APInt::operator=(uint64_t RHS) {
+  printf( "starting APInt::operator=(uint64_t)\n" );;
   if (isSingleWord())
     VAL = RHS;
   else {
