@@ -662,8 +662,10 @@ public:
   ///
   /// \returns *this after assignment of RHS.
   APInt &operator=(const APInt &RHS) {
+    printf( "starting APInt::operator=(const APInt &).\n" );;
     // If the bitwidths are the same, we can avoid mucking with memory
     if (isSingleWord() && RHS.isSingleWord()) {
+      printf( "   is a single word\n" );;
       VAL = RHS.VAL;
       BitWidth = RHS.BitWidth;
       signedWrapHappened= RHS.signedWrapHappened;
@@ -677,6 +679,9 @@ public:
 
   /// @brief Move assignment operator.
   APInt &operator=(APInt &&that) {
+    printf( "starting APInt::operator=(const APInt &&).\n" );;
+    printf( "   &src addr=%p, src addr=%p, dest addr=%p, .\n", 
+	&that, that, this );;
     if (!isSingleWord()) {
       // The MSVC STL shipped in 2013 requires that self move assignment be a
       // no-op.  Otherwise algorithms like stable_sort will produce answers
@@ -686,7 +691,16 @@ public:
       delete[] pVal;
     }
 
+    printf("   isSingleWord()=true.\n");
+    printf("   src's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
+	that.signedWrapHappened, that.unsignedWrapHappened );;
+    printf ("   src's wrapMagicNumber=%d, address=%p.\n", 
+	that.wrapMagicNumber, that );;
+    printf ("   src's VAL=%lu\n", that.VAL );;
     VAL = that.VAL;
+    signedWrapHappened= that.signedWrapHappened;
+    unsignedWrapHappened= that.unsignedWrapHappened;
+    wrapMagicNumber= that.wrapMagicNumber;; // used for debugging
 
     // If 'this == &that', avoid zeroing our own bitwidth by storing to 'that'
     // first.
@@ -694,6 +708,12 @@ public:
     that.BitWidth = 0;
     BitWidth = ThatBitWidth;
 
+    printf("   dest's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
+	signedWrapHappened, unsignedWrapHappened );;
+    printf ("   dest's wrapMagicNumber=%d, address=%p.\n", 
+	wrapMagicNumber, this );;
+    printf ("   dest's VAL=%lu\n", VAL );;
+    printf( "stopping APInt::operator=(const APInt &&).\n" );;
     return *this;
   }
 
