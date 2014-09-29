@@ -680,8 +680,8 @@ public:
   /// @brief Move assignment operator.
   APInt &operator=(APInt &&that) {
     printf( "starting APInt::operator=(const APInt &&).\n" );;
-    printf( "   &src addr=%p, src addr=%p, dest addr=%p, .\n", 
-	&that, that, this );;
+    printf( "   &src addr=%p, dest addr=%p, .\n", 
+	&that, this );;
     if (!isSingleWord()) {
       // The MSVC STL shipped in 2013 requires that self move assignment be a
       // no-op.  Otherwise algorithms like stable_sort will produce answers
@@ -695,7 +695,7 @@ public:
     printf("   src's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
 	that.signedWrapHappened, that.unsignedWrapHappened );;
     printf ("   src's wrapMagicNumber=%d, address=%p.\n", 
-	that.wrapMagicNumber, that );;
+	that.wrapMagicNumber, &that );;
     printf ("   src's VAL=%lu\n", that.VAL );;
     VAL = that.VAL;
     signedWrapHappened= that.signedWrapHappened;
