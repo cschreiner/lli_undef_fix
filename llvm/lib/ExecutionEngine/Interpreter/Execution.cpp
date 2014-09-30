@@ -789,6 +789,8 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
       printf("   R.IntVal.didSignedWrap=%d, didUnsignedWrap=%d\n", 
 	  R.IntVal.didSignedWrap(), R.IntVal.didUnsignedWrap() );;
       printf ("   R's VAL=%lu\n", R.IntVal.getZExtValue() );;
+      printf ("   R's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
+	  R.IntVal.didSignedWrap(), R.IntVal,didUnsignedWrap() );;
       printf ("   R's wrapMagicNumber=%d, R's addr=%p. \n", 
 	  R.IntVal.getWrapMagicNumber(), &(R.IntVal) );;
       assert ( !(I.hasNoUnsignedWrap() && R.IntVal.didUnsignedWrap() ) );  
