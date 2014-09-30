@@ -525,12 +525,14 @@ APInt APInt::operator-(const APInt& RHS) const {
     result.wrapMagicNumber= 7707177;;
     printf ("   result's wrapMagicNumber=%d, result's address=%p.\n", 
 	result.wrapMagicNumber, (void*)(&result) );;
+    printf ("stopping APInt::operator-().\n" );;
     return result;
     //return APInt(BitWidth, VAL - RHS.VAL); /* TODO: delete this */
   }
   printf ("   getNumWords()=%d\n", getNumWords() );;
   APInt Result(BitWidth, 0);
   sub(Result.pVal, this->pVal, RHS.pVal, getNumWords());
+  printf ("stopping APInt::operator-().\n" );;
   return Result.clearUnusedBits();
 }
 
