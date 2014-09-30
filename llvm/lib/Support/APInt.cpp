@@ -109,12 +109,14 @@ APInt::APInt(unsigned numBits, ArrayRef<uint64_t> bigVal)
   : BitWidth(numBits), VAL(0) {
   printf( "starting APInt::APInt( unsigned, ArrayRef<uint64_t> )\n" );;
   initFromArray(bigVal);
+  printf( "stopping APInt::APInt( unsigned, ArrayRef<uint64_t> )\n" );;
 }
 
 APInt::APInt(unsigned numBits, unsigned numWords, const uint64_t bigVal[])
   : BitWidth(numBits), VAL(0) {
   printf( "starting APInt::APInt( unsigned, unsigned, const uint64_t[] )\n" );;
   initFromArray(makeArrayRef(bigVal, numWords));
+  printf( "stopping APInt::APInt( unsigned, unsigned, const uint64_t[] )\n" );;
 }
 
 APInt::APInt(unsigned numbits, StringRef Str, uint8_t radix)
@@ -122,6 +124,7 @@ APInt::APInt(unsigned numbits, StringRef Str, uint8_t radix)
   printf( "starting APInt::APInt( unsigned, StringRef, uint8_t )\n" );;
   assert(BitWidth && "Bitwidth too small");
   fromString(numbits, Str, radix);
+  printf( "stopping APInt::APInt( unsigned, StringRef, uint8_t )\n" );;
 }
 
 APInt& APInt::AssignSlowCase(const APInt& RHS) {
