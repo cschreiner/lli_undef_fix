@@ -23,6 +23,7 @@
 #include <climits>
 #include <cstring>
 #include <string>
+#include <stdio.h> //;;
 
 namespace llvm {
 class Deserializer;
@@ -103,7 +104,11 @@ class APInt {
   ///
   /// This constructor is used only internally for speed of construction of
   /// temporaries. It is unsafe for general use so it is not public.
-  APInt(uint64_t *val, unsigned bits) : BitWidth(bits), pVal(val) {}
+  APInt(uint64_t *val, unsigned bits) : BitWidth(bits), pVal(val) 
+  //{} initially, this was a blank constructor
+  {
+    printf( "startign APInt::APInt( uint64_t*, unsigned )\n" );;
+  }
 
   /// \brief Determine if this APInt just has one word to store value.
   ///
@@ -243,6 +248,7 @@ public:
   /// \param isSigned how to treat signedness of val
   APInt(unsigned numBits, uint64_t val, bool isSigned = false)
       : BitWidth(numBits), VAL(0) {
+    printf( "starting APInt::APInt( unsigned, uint64_t, bool )\n" );;
     assert(BitWidth && "bitwidth too small");
     if (isSingleWord())
       VAL = val;
@@ -285,15 +291,23 @@ public:
   /// Simply makes *this a copy of that.
   /// @brief Copy Constructor.
   APInt(const APInt &that) : BitWidth(that.BitWidth), VAL(0) {
+    printf( "starting APInt::APInt(const APInt &).\n" );;
+    printf( "   src addr=%p, dest addr=%p.\n", 
+	(void*)(&that), (void*)(this) );;
     assert(BitWidth && "bitwidth too small");
-    if (isSingleWord())
+    if (isSingleWord())  {
+      printf( "   running single word case\n" );;
       VAL = that.VAL;
-    else
+      signedWrapHappened= that.signedWrapHappened;
+      unsignedWrapHappened= that.unsignedWrapHappened;
+      wrapMagicNumber= that.wrapMagicNumber;; // used for debugging
+    } else
       initSlowCase(that);
   }
 
   /// \brief Move Constructor.
   APInt(APInt &&that) : BitWidth(that.BitWidth), VAL(that.VAL) {
+    printf( "starting APInt::APInt(APInt &&) (move constructor).\n" );;
     that.BitWidth = 0;
   }
 
@@ -681,7 +695,7 @@ public:
   APInt &operator=(APInt &&that) {
     printf( "starting APInt::operator=(const APInt &&).\n" );;
     printf( "   &src addr=%p, dest addr=%p, .\n", 
-	&that, this );;
+	    (void*)(&that), (void*)(this) );;
     if (!isSingleWord()) {
       // The MSVC STL shipped in 2013 requires that self move assignment be a
       // no-op.  Otherwise algorithms like stable_sort will produce answers
@@ -695,7 +709,7 @@ public:
     printf("   src's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
 	that.signedWrapHappened, that.unsignedWrapHappened );;
     printf ("   src's wrapMagicNumber=%d, address=%p.\n", 
-	that.wrapMagicNumber, &that );;
+	that.wrapMagicNumber, (void*)(&that) );;
     printf ("   src's VAL=%lu\n", that.VAL );;
     VAL = that.VAL;
     signedWrapHappened= that.signedWrapHappened;
@@ -711,7 +725,7 @@ public:
     printf("   dest's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
 	signedWrapHappened, unsignedWrapHappened );;
     printf ("   dest's wrapMagicNumber=%d, address=%p.\n", 
-	wrapMagicNumber, this );;
+	    wrapMagicNumber, (void*)(this) );;
     printf ("   dest's VAL=%lu\n", VAL );;
     printf( "stopping APInt::operator=(const APInt &&).\n" );;
     return *this;

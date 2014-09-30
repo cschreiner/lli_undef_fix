@@ -107,16 +107,19 @@ void APInt::initFromArray(ArrayRef<uint64_t> bigVal) {
 
 APInt::APInt(unsigned numBits, ArrayRef<uint64_t> bigVal)
   : BitWidth(numBits), VAL(0) {
+  printf( "starting APInt::APInt( unsigned, ArrayRef<uint64_t> )\n" );;
   initFromArray(bigVal);
 }
 
 APInt::APInt(unsigned numBits, unsigned numWords, const uint64_t bigVal[])
   : BitWidth(numBits), VAL(0) {
+  printf( "starting APInt::APInt( unsigned, unsigned, const uint64_t[] )\n" );;
   initFromArray(makeArrayRef(bigVal, numWords));
 }
 
 APInt::APInt(unsigned numbits, StringRef Str, uint8_t radix)
   : BitWidth(numbits), VAL(0) {
+  printf( "starting APInt::APInt( unsigned, StringRef, uint8_t )\n" );;
   assert(BitWidth && "Bitwidth too small");
   fromString(numbits, Str, radix);
 }
@@ -513,12 +516,12 @@ APInt APInt::operator-(const APInt& RHS) const {
 	(int64_t)result.VAL > (int64_t)VAL : 
 	(int64_t)result.VAL < (int64_t)VAL;
     result.signedWrapHappened= true;;
+    printf ("   result's VAL=%lu\n", result.VAL );;
     printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
 	result.signedWrapHappened, result.unsignedWrapHappened );;
     result.wrapMagicNumber= 7707177;;
     printf ("   result's wrapMagicNumber=%d, result's address=%p.\n", 
-	result.wrapMagicNumber, &result );;
-    printf ("   result's VAL=%lu\n", result.VAL );;
+	result.wrapMagicNumber, (void*)(&result) );;
     return result;
     //return APInt(BitWidth, VAL - RHS.VAL); /* TODO: delete this */
   }
