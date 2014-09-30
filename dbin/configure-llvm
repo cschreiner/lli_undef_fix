@@ -25,12 +25,14 @@ esac
 
 BUILD_DIR=`pwd`
 if find | grep -vEq -e '^\\s*$'; then
-   echo ${scriptname}: current directory would be used as the build dir, but
-   echo "  " it does not appear to be empty.
-   exit -1
+   # all appears to be ok
+   echo setting up build directory in $BUILD_DIR.
+else
+   echo ${scriptname}: current directory would be used 
+   echo "  " as the build dir, but it does not appear to be empty.
+   exit 255
 fi
 
-echo setting up build directory in $BUILD_DIR.
 exec $PROJ_DIR/git/llvm/configure --prefix $PROJ_DIR/live \
       $host_specific_options "$@"
 
