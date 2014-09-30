@@ -23,7 +23,14 @@ esac
 # Note: configure's --disable-compiler-version-checks flag doesn't work with
 # gcc4.6 because the build process requires compiler support for C++2011.
 
-cd $PROJ_DIR/git/llvm
+BUILD_DIR=`pwd`
+if find | grep -vEq -e '^\\s*$'; then
+   echo ${scriptname}: current directory would be used as the build dir, but
+   echo "  " it does not appear to be empty.
+   exit -1
+fi
+
+echo setting up build directory in $BUILD_DIR.
 exec $PROJ_DIR/git/llvm/configure --prefix $PROJ_DIR/live \
       $host_specific_options "$@"
 
