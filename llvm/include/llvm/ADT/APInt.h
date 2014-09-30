@@ -308,7 +308,14 @@ public:
   /// \brief Move Constructor.
   APInt(APInt &&that) : BitWidth(that.BitWidth), VAL(that.VAL) {
     printf( "starting APInt::APInt(APInt &&) (move constructor).\n" );;
+    printf( "   src.signedWrapHappened=%d, src.unsignedWrapHappened=%d.\n", 
+	that.signedWrapHappened, that.unsignedWrapHappened );;
     that.BitWidth = 0;
+    signedWrapHappened= that.signedWrapHappened;
+    unsignedWrapHappened= that.unsignedWrapHappened;
+    wrapMagicNumber= that.wrapMagicNumber;
+    printf( "   src addr=%p, dest addr=%p.\n", (void*)(&that), (void*)this );;
+    printf( "stopping APInt::APInt(APInt &&) (move constructor).\n" );;
   }
 
   /// \brief Destructor.
