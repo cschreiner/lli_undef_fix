@@ -107,7 +107,7 @@ class APInt {
   APInt(uint64_t *val, unsigned bits) : BitWidth(bits), pVal(val) 
   //{} initially, this was a blank constructor
   {
-    printf( "startign APInt::APInt( uint64_t*, unsigned )\n" );;
+    printf( "starting & stopping APInt::APInt( uint64_t*, unsigned )\n" );;
   }
 
   /// \brief Determine if this APInt just has one word to store value.
@@ -255,6 +255,7 @@ public:
     else
       initSlowCase(numBits, val, isSigned);
     clearUnusedBits();
+    printf( "stopping APInt::APInt( unsigned, uint64_t, bool )\n" );;
   }
 
   /// \brief Construct an APInt of numBits width, initialized as bigVal[].
@@ -301,8 +302,10 @@ public:
       signedWrapHappened= that.signedWrapHappened;
       unsignedWrapHappened= that.unsignedWrapHappened;
       wrapMagicNumber= that.wrapMagicNumber;; // used for debugging
-    } else
+    } else {
       initSlowCase(that);
+    }
+    printf( "stopping APInt::APInt(const APInt &).\n" );;
   }
 
   /// \brief Move Constructor.
