@@ -1,0 +1,27 @@
+
+Reference of Reference in C++:
+
+http://stackoverflow.com/questions/5590978/reference-of-reference-in-c
+
+
+General C++:
+
+instance cloning:
+Google search: does c++ = assignment clone an instance
+http://www.cplusplus.com/articles/y8hv0pDG/
+C++ tutorial: http://www.cplusplus.com/doc/tutorial/classes/
+
+
+GDB:
+http://ftp.gnu.org/old-gnu/Manuals/gdb/html_node/gdb_93.html
+
+
+Integer arithmetic overflow:
+google search: test for signed integer overflow
+http://c-faq.com/misc/intovf.html
+http://www.fefe.de/intof.html
+http://stackoverflow.com/questions/199333/best-way-to-detect-integer-overflow-in-c-c
+http://stackoverflow.com/questions/2633661/how-to-check-integer-overflow-in-c
+
+(end of file)
+
