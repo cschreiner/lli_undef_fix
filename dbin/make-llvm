@@ -7,34 +7,57 @@ BUILD_ROOT=/uusoc/scratch/dyson/cas/edu/uut/lli_undef_fix/git/llvm.build
 # may mean that the setup script needs to set the PROJ_ROOT environment
 # variable.
 
+separator="===================================================================="
+
 cd $BUILD_ROOT
 echo pwd=`pwd` #;;
-
-start_time_hms="`date`"
-start_time=`date +%s`
-make -j 3 "$@"
-make_status=$?
-
-if [ $make_status -eq 0 ]; then
-   echo " "
-   echo ====================================================================
-   make install
-   make_status=$?
+if [ -f BUILD.out ]; then
+   cleandir BUILD.out
 fi
 
-# compute build time
-stop_time_hms="`date`"
-stop_time=`date +%s`
+# ---------------------------------------------------------------------------
+# start logging the output
+(
+   start_time_hms="`date`"
+   start_time=`date +%s`
 
-elapsed_s=$(( $stop_time - $start_time ))
-elapsed_min=$(( $elapsed_s / 60 ))
-elapsed_min_rem_s=$(( $elapsed_s % 60 ))
+   # ------------------------------------------------------------------------
+   # do the core build
+   
+   make -j 3 "$@"
+   make_status=$?
 
-echo build status=$make_status \(should be 0\)
-printf "build time %d:%2.2d (%d s)\n" \
-      $elapsed_min $elapsed_min_rem_s $elapsed_s 
-echo "  " start time=$start_time_hms
-echo "  " stop time=$stop_time_hms
+   if [ $make_status -eq 0 ]; then
+      echo " "
+      echo $separator
+      echo Installing...
+      echo " "
+      make install
+      make_status=$?
+   fi
+
+   # ------------------------------------------------------------------------
+   # report build statistics
+
+   # compute build time
+   stop_time_hms="`date`"
+   stop_time=`date +%s`
+
+   elapsed_s=$(( $stop_time - $start_time ))
+   elapsed_min=$(( $elapsed_s / 60 ))
+   elapsed_min_rem_s=$(( $elapsed_s % 60 ))
+
+   echo " "
+   echo $separator
+   echo build status=$make_status \(should be 0\)
+   printf "build time %d:%2.2d (%d s)\n" \
+	 $elapsed_min $elapsed_min_rem_s $elapsed_s 
+   echo "  " start time=$start_time_hms
+   echo "  " stop time=$stop_time_hms
+
+# ---------------------------------------------------------------------------
+# stop logging output
+) 2>&1 | tee BUILD.out
 
 # ---------------------------------------------------------------------------
 # end of script
