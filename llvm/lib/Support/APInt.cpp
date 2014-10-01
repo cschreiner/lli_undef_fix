@@ -508,7 +508,7 @@ APInt APInt::operator-(const APInt& RHS) const {
     printf ("   VAL=%lu, getActiveBits()=%u, BitWidth=%lu \n", 
     	 VAL, getActiveBits(), (unsigned long)BitWidth  );;
     printf ("   RHS: VAL=%lu, getActiveBits()=%u, BitWidth=%lu \n", 
-    	 RHS.VAL, RHS.getActiveBits(), (unsigned long)RHS.BitWidth  );;
+    	 RHS.VAL, RHS.getActiveBits(), (unsigned long)RHS.BitWidth );;
 
     APInt result (BitWidth, VAL - RHS.VAL);
     result.unsignedWrapHappened= ( VAL < RHS.VAL ); // check for -overflow
