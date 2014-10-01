@@ -21,17 +21,19 @@ if [ ! -d $PROJ_DIR/live/bin ]; then
 fi
 export PATH=$PROJ_DIR/live/bin:$PATH
 
-cd $PROJ_DIR/
+cd $PROJ_DIR/git/llvm
 workspace soft
 
 # ==========================================================================
 # extra windows customized for this project
 
 # these are currently customized for dyson, rethink them for other hosts.
+left_monitor_width=1680
+left_monitor_height=1050
 right_monitor_width=1280
 right_monitor_height=1024
 
-xterm -sb -title "vmstat xterm" -geometry 80x25-$right_monitor_width-0 \
+xterm -sb -title "vmstat xterm" -geometry 82x25+$left_monitor_width-0 \
       -e "vmstat 5" &
 
 # TODO2: add something here for the web browser window
