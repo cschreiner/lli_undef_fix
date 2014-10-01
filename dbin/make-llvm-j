@@ -1,0 +1,72 @@
+#!/bin/bash
+# build llvm and install it
+
+scriptname=make_llvm_j
+
+arg_j_value=$1
+if [ -z "$arg_j_value" ]; then
+   echo ${scriptname}: error: no j label found on command line.
+   exit 255
+fi
+
+BUILD_ROOT=/uusoc/scratch/dyson/cas/edu/uut/lli_undef_fix/git/llvm.build
+# TODO: change to use PROJ_ROOT to compute the BUILD_ROOT directory.  This
+# may mean that the setup script needs to set the PROJ_ROOT environment
+# variable.
+
+separator="===================================================================="
+
+cd $BUILD_ROOT
+echo pwd=`pwd` #;;
+if [ -f BUILD.out ]; then
+   cleandir BUILD.out
+fi
+
+# ---------------------------------------------------------------------------
+# start logging the output
+(
+   start_time_hms="`date`"
+   start_time=`date +%s`
+
+   # ------------------------------------------------------------------------
+   # do the core build
+   
+   echo make arguments=\""$@"\"
+   make -j $arg_j_value "$@"
+   make_status=$?
+
+   if [ $make_status -eq 0 ]; then
+      echo " "
+      echo $separator
+      echo Installing...
+      echo " "
+      make install
+      make_status=$?
+   fi
+
+   # ------------------------------------------------------------------------
+   # report build statistics
+
+   # compute build time
+   stop_time_hms="`date`"
+   stop_time=`date +%s`
+
+   elapsed_s=$(( $stop_time - $start_time ))
+   elapsed_min=$(( $elapsed_s / 60 ))
+   elapsed_min_rem_s=$(( $elapsed_s % 60 ))
+
+   echo " "
+   echo $separator
+   echo build status=$make_status \(should be 0\)
+   printf "build time %d:%2.2d (%d s)\n" \
+	 $elapsed_min $elapsed_min_rem_s $elapsed_s 
+   echo "  " start time=$start_time_hms
+   echo "  " stop time=$stop_time_hms
+
+# ---------------------------------------------------------------------------
+# stop logging output
+) 2>&1 | tee BUILD.${arg_j_value}.out
+
+# ---------------------------------------------------------------------------
+# end of script
+
