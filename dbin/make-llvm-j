@@ -14,12 +14,14 @@ BUILD_ROOT=/uusoc/scratch/dyson/cas/edu/uut/lli_undef_fix/git/llvm.build
 # may mean that the setup script needs to set the PROJ_ROOT environment
 # variable.
 
+BUILD_OUT_FILE=BUILD.j${arg_j_value}.out
+
 separator="===================================================================="
 
 cd $BUILD_ROOT
 echo pwd=`pwd` #;;
-if [ -f BUILD.out ]; then
-   cleandir BUILD.out
+if [ -f $BUILD_OUT_FILE ]; then
+   cleandir $BUILD_OUT_FILE
 fi
 
 # ---------------------------------------------------------------------------
@@ -65,7 +67,7 @@ fi
 
 # ---------------------------------------------------------------------------
 # stop logging output
-) 2>&1 | tee BUILD.${arg_j_value}.out
+) 2>&1 | tee $BUILD_OUT_FILE
 
 # ---------------------------------------------------------------------------
 # end of script
