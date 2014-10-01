@@ -1,0 +1,26 @@
+#!/bin/sh
+# runs make repeatedly with different values for -j.  Intended to determine
+# how much the build time varies with j.  
+#
+# Note: This script is intended to be run in the build directory.
+#
+# TODO: it would be nice to find some way of recording vmstat output during
+# a build so we can see what resources are being stretched with each value
+# of j.
+
+half_separator="@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+separator=${half_separator}${half_separator}
+
+for pass in 1 2 3 4; do
+   for ii in 01 02 03 04 05 06 07 08 09 10 11 12; do 
+      make clean 
+      ../dbin/make-llvm-j pass${pass}-j${ii} -j $ii
+      echo " " 
+      echo " " 
+      echo $separator
+      echo " " 
+      echo rebuilding for pass $pass, j=$ii 
+      echo " " 
+   done
+done
+
