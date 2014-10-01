@@ -82,7 +82,6 @@ class APInt {
   */
   bool signedWrapHappened;
   bool unsignedWrapHappened;
-  int wrapMagicNumber;; // used for debugging
 
   /// This union is used to store the integer value. When the
   /// integer bit-width <= 64, it uses VAL, otherwise it uses pVal.
@@ -301,7 +300,6 @@ public:
       VAL = that.VAL;
       signedWrapHappened= that.signedWrapHappened;
       unsignedWrapHappened= that.unsignedWrapHappened;
-      wrapMagicNumber= that.wrapMagicNumber;; // used for debugging
     } else {
       initSlowCase(that);
     }
@@ -316,7 +314,6 @@ public:
     that.BitWidth = 0;
     signedWrapHappened= that.signedWrapHappened;
     unsignedWrapHappened= that.unsignedWrapHappened;
-    wrapMagicNumber= that.wrapMagicNumber;
     printf( "   src addr=%p, dest addr=%p.\n", (void*)(&that), (void*)this );;
     printf( "stopping APInt::APInt(APInt &&) (move constructor).\n" );;
   }
@@ -340,8 +337,6 @@ public:
   /// \brief Returns whether this instance's value was created by an operation
   /// that did an unsigned wraparound.
   inline bool didUnsignedWrap() const { return unsignedWrapHappened; }
-  inline int getWrapMagicNumber() const { return wrapMagicNumber;; }
-
 
   /// \brief Returns whether this instance allocated memory.
   bool needsCleanup() const { return !isSingleWord(); }
@@ -694,7 +689,6 @@ public:
       BitWidth = RHS.BitWidth;
       signedWrapHappened= RHS.signedWrapHappened;
       unsignedWrapHappened= RHS.unsignedWrapHappened;
-      wrapMagicNumber= RHS.wrapMagicNumber;; // used for debugging
       return clearUnusedBits();
     }
 
@@ -718,13 +712,11 @@ public:
     printf("   isSingleWord()=true.\n");
     printf("   src's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
 	that.signedWrapHappened, that.unsignedWrapHappened );;
-    printf ("   src's wrapMagicNumber=%d, address=%p.\n", 
-	that.wrapMagicNumber, (void*)(&that) );;
+    printf ("   src's address=%p.\n", (void*)(&that) );;
     printf ("   src's VAL=%lu\n", that.VAL );;
     VAL = that.VAL;
     signedWrapHappened= that.signedWrapHappened;
     unsignedWrapHappened= that.unsignedWrapHappened;
-    wrapMagicNumber= that.wrapMagicNumber;; // used for debugging
 
     // If 'this == &that', avoid zeroing our own bitwidth by storing to 'that'
     // first.
@@ -734,8 +726,7 @@ public:
 
     printf("   dest's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
 	signedWrapHappened, unsignedWrapHappened );;
-    printf ("   dest's wrapMagicNumber=%d, address=%p.\n", 
-	    wrapMagicNumber, (void*)(this) );;
+    printf ("   dest's address=%p.\n", (void*)(this) );;
     printf ("   dest's VAL=%lu\n", VAL );;
     printf( "stopping APInt::operator=(const APInt &&).\n" );;
     return *this;

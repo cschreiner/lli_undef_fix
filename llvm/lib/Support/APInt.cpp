@@ -167,6 +167,7 @@ APInt& APInt::operator=(uint64_t RHS) {
     pVal[0] = RHS;
     memset(pVal+1, 0, (getNumWords() - 1) * APINT_WORD_SIZE);
   }
+  printf( "stopping APInt::operator=(uint64_t)\n" );;
   return clearUnusedBits();
 }
 
@@ -218,7 +219,7 @@ APInt& APInt::operator++() {
 /// @returns the borrow out of the subtraction
 /* CAS TODO2: how does this function react to overflow? */
 static bool sub_1(uint64_t x[], unsigned len, uint64_t y) {
-  printf ( "starting APInt's sub_1()\n" );;
+  printf ( "starting APInt's sub_1(uint64_t[], unsigned, uint64_t)\n" );;
   for (unsigned i = 0; i < len; ++i) {
     uint64_t X = x[i];
     x[i] -= y;
@@ -229,6 +230,7 @@ static bool sub_1(uint64_t x[], unsigned len, uint64_t y) {
       break;  // Remaining digits are unchanged so exit early
     }
   }
+  printf ( "stopping APInt's sub_1(uint64_t[], unsigned, uint64_t)\n" );;
   return bool(y);
 }
 
@@ -278,7 +280,7 @@ APInt& APInt::operator+=(const APInt& RHS) {
 static bool sub(uint64_t *dest, const uint64_t *x, const uint64_t *y,
                 unsigned len) {
   bool borrow = false;
-  printf ( "starting APInt's sub()\n" );;
+  printf ( "starting APInt's sub(uint64_t, const uint64_t, const uint64_t, unsigned)\n" );;
   for (unsigned i = 0; i < len; ++i) {
     uint64_t x_tmp = borrow ? x[i] - 1 : x[i];
     borrow = y[i] > x_tmp || (borrow && x[i] == 0);
@@ -291,7 +293,7 @@ static bool sub(uint64_t *dest, const uint64_t *x, const uint64_t *y,
 /// @returns this, after subtraction
 /// @brief Subtraction assignment operator.
 APInt& APInt::operator-=(const APInt& RHS) {
-  printf ( "starting APInt::operator-=()\n" );;
+  printf ( "starting APInt::operator-=(const APInt&)\n" );;
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
   if (isSingleWord())
     VAL -= RHS.VAL;
@@ -518,13 +520,10 @@ APInt APInt::operator-(const APInt& RHS) const {
     result.signedWrapHappened= (int64_t)RHS.VAL > 0 ? 
 	(int64_t)result.VAL > (int64_t)VAL : 
 	(int64_t)result.VAL < (int64_t)VAL;
-    result.signedWrapHappened= true;;
     printf ("   result's VAL=%lu\n", result.VAL );;
     printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
 	result.signedWrapHappened, result.unsignedWrapHappened );;
-    result.wrapMagicNumber= 7707177;;
-    printf ("   result's wrapMagicNumber=%d, result's address=%p.\n", 
-	result.wrapMagicNumber, (void*)(&result) );;
+    printf ("   result's address=%p.\n", (void*)(&result) );;
     printf ("stopping APInt::operator-().\n" );;
     return result;
     //return APInt(BitWidth, VAL - RHS.VAL); /* TODO: delete this */
