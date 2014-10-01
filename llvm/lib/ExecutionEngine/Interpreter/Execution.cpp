@@ -771,8 +771,8 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
       break;
     case Instruction::Add:   
       printf("   got to case Instruction::Add\n");;
-      printf("   nsw=%d, nuw=%d\n", I.hasNoSignedWrap(), 
-	  I.hasNoUnsignedWrap() );;
+      printf("   instruction's nsw=%d, nuw=%d\n", 
+	  I.hasNoSignedWrap(), I.hasNoUnsignedWrap() );;
       R.IntVal = Src1.IntVal + Src2.IntVal; 
       printf("   R.IntVal.didSignedWrap=%d, didUnsignedWrap=%d\n", 
 	  R.IntVal.didSignedWrap(), R.IntVal.didUnsignedWrap() );;
@@ -783,7 +783,7 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
       break;
     case Instruction::Sub:   
       printf("   got to case Instruction::Sub\n");;
-      printf("   nsw=%d, nuw=%d\n", I.hasNoSignedWrap(), 
+      printf("   instruction's nsw=%d, nuw=%d\n", I.hasNoSignedWrap(), 
 	  I.hasNoUnsignedWrap() );;
       R.IntVal = Src1.IntVal - Src2.IntVal; 
       printf("   R.IntVal.didSignedWrap=%d, didUnsignedWrap=%d\n", 
@@ -791,8 +791,7 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
       printf ("   R's VAL=%lu\n", R.IntVal.getZExtValue() );;
       printf ("   R's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
 	  R.IntVal.didSignedWrap(), R.IntVal.didUnsignedWrap() );;
-      printf ("   R's wrapMagicNumber=%d, R's addr=%p. \n", 
-	  R.IntVal.getWrapMagicNumber(), &(R.IntVal) );;
+      printf ("   R's addr=%p. \n", &(R.IntVal) );;
       assert ( !(I.hasNoUnsignedWrap() && R.IntVal.didUnsignedWrap() ) );  
       printf("   got to case Sub's mercury\n");;
       assert ( !(I.hasNoSignedWrap() && R.IntVal.didSignedWrap() ) );  
