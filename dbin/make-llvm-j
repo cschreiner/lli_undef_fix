@@ -3,9 +3,9 @@
 
 scriptname=make_llvm_j
 
-arg_j_value=$1
-if [ -z "$arg_j_value" ]; then
-   echo ${scriptname}: error: no j label found on command line.
+arg_label=$1
+if [ -z "$arg_label" ]; then
+   echo ${scriptname}: error: no logfile label found on command line.
    exit 255
 fi
 shift
@@ -15,7 +15,7 @@ BUILD_ROOT=/uusoc/scratch/dyson/cas/edu/uut/lli_undef_fix/git/llvm.build
 # may mean that the setup script needs to set the PROJ_ROOT environment
 # variable.
 
-BUILD_OUT_FILE=BUILD.j${arg_j_value}.out
+BUILD_OUT_FILE=BUILD.${arg_label}.out
 
 separator="===================================================================="
 
@@ -35,7 +35,7 @@ fi
    # do the core build
    
    echo make arguments=\""$@"\"
-   make -j $arg_j_value "$@"
+   make "$@"
    make_status=$?
 
    if [ $make_status -eq 0 ]; then
