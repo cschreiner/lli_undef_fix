@@ -1,0 +1,28 @@
+#!/bin/sh
+# set up a workspace for working on this project
+#
+# Note: This is heavily customized for Christian Schreiner's home directory
+# organization.  Other users will probably want to modify this to their
+# tastes.
+
+scriptname=lli_undef_fix_workspace
+
+export PROJ_DIR=$EDUUUT/lli_undef_fix
+if [ ! -d $PROJ_DIR ]; then
+   echo ${scriptname}: can not find project directory.
+   echo "  " dir=\"$PROJ_DIR\".
+   exit 255
+fi
+
+if [ ! -d $PROJ_DIR/live/bin ]; then
+   echo ${scriptname}: can not find llvm live binary directory.
+   echo "  " dir=\"$PROJ_DIR/live/bin\".
+   exit 255
+fi
+export PATH=$PROJ_DIR/live/bin:$PATH
+
+cd $PROJ_DIR/
+workspace soft
+
+# end of script
+
