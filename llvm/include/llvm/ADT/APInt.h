@@ -23,7 +23,7 @@
 #include <climits>
 #include <cstring>
 #include <string>
-#include <stdio.h> //;;
+//#include <stdio.h> //;;
 
 namespace llvm {
 class Deserializer;
@@ -106,7 +106,10 @@ class APInt {
   APInt(uint64_t *val, unsigned bits) : BitWidth(bits), pVal(val) 
   //{} initially, this was a blank constructor
   {
-    //printf( "starting & stopping APInt::APInt( uint64_t*, unsigned )\n" );;
+    //printf( "starting APInt::APInt( uint64_t*, unsigned )\n" );;
+    signedWrapHappened= false;
+    unsignedWrapHappened= false;
+    //printf( "stopping APInt::APInt( uint64_t*, unsigned )\n" );;
   }
 
   /// \brief Determine if this APInt just has one word to store value.
@@ -253,6 +256,8 @@ public:
       VAL = val;
     else
       initSlowCase(numBits, val, isSigned);
+    signedWrapHappened= false;
+    unsignedWrapHappened= false;
     clearUnusedBits();
     //printf( "stopping APInt::APInt( unsigned, uint64_t, bool )\n" );;
   }
@@ -326,7 +331,13 @@ public:
   ///
   /// This is useful for object deserialization (pair this with the static
   ///  method Read).
-  explicit APInt() : BitWidth(1) {}
+  explicit APInt() : BitWidth(1) {
+    /* TODO2: unsure if we need these here, but it seems better to be
+       safe than to later have obscure bugs blowing up unpredictably.
+    */
+    signedWrapHappened= false;
+    unsignedWrapHappened= false;
+  }
 
   /// \brief Returns whether this instance's value was created by an operation
   /// that did a signed wraparound.
