@@ -498,7 +498,11 @@ APInt APInt::operator+(const APInt& RHS) const {
   if (isSingleWord())  {
     // assume unsigned
     APInt result= APInt(BitWidth, VAL + RHS.VAL);
-    result.unsignedWrapHappened= ((result.VAL >= VAL) || (result.VAL >= RHS.VAL) );
+    /* Note the similarity to the multi-word formulas for
+       [un]signedWrapHappened, below.
+    */
+    // TODO: check formulas for [un]signedWrapHappened.
+    result.unsignedWrapHappened= ((result.VAL < VAL) || (result.VAL < RHS.VAL) );
     result.signedWrapHappened= (int64_t)RHS.VAL < 0 ? 
 	(int64_t)result.VAL > (int64_t)VAL : 
 	(int64_t)result.VAL < (int64_t)VAL;
@@ -506,6 +510,14 @@ APInt APInt::operator+(const APInt& RHS) const {
   }
   APInt Result(BitWidth, 0);
   add(Result.pVal, this->pVal, RHS.pVal, getNumWords());
+  /* Note the similarity to the single-word formulas for
+     [un]signedWrapHappened, above.
+  */
+  // TODO: check formulas for [un]signedWrapHappened.
+  result.unsignedWrapHappened= ( ult(result, this) || ult(result, RHS) );
+  result.signedWrapHappened= RHS.slt( 0 ) ?
+      result.sgt( this ) :
+      result.slt( this );
   return Result.clearUnusedBits();
 }
 
@@ -520,6 +532,7 @@ APInt APInt::operator-(const APInt& RHS) const {
     //	 RHS.VAL, RHS.getActiveBits(), (unsigned long)RHS.BitWidth );;
 
     APInt result (BitWidth, VAL - RHS.VAL);
+    /* note parallels with the multi-word cases, below */
     result.unsignedWrapHappened= ( VAL < RHS.VAL ); // check for -overflow
     /* TODO: add a similar check for signedWrapHappened. Use
        getSignedMinValue(numBits) and getSignedMaxValue(numBits) as
@@ -539,6 +552,14 @@ APInt APInt::operator-(const APInt& RHS) const {
   printf ("   getNumWords()=%d\n", getNumWords() );;
   APInt Result(BitWidth, 0);
   sub(Result.pVal, this->pVal, RHS.pVal, getNumWords());
+
+  /* note parallels with the single-word cases, above */
+  result.unsignedWrapHappened= ult( RHS );
+  result.signedWrapHappened= RHS.sgt(0) ? 
+      result.sgt(this) :
+      result.slt(this);
+  //printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
+  //	result.signedWrapHappened, result.unsignedWrapHappened );;
   printf ("stopping APInt::operator-().\n" );;
   return Result.clearUnusedBits();
 }
