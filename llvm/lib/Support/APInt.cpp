@@ -25,7 +25,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <limits>
-#include <stdio.h> //;;
+//#include <stdio.h> //;;
 using namespace llvm;
 
 #define DEBUG_TYPE "apint"
@@ -107,24 +107,26 @@ void APInt::initFromArray(ArrayRef<uint64_t> bigVal) {
 
 APInt::APInt(unsigned numBits, ArrayRef<uint64_t> bigVal)
   : BitWidth(numBits), VAL(0) {
-  printf( "starting APInt::APInt( unsigned, ArrayRef<uint64_t> )\n" );;
+  //printf( "starting APInt::APInt( unsigned, ArrayRef<uint64_t> )\n" );;
   initFromArray(bigVal);
-  printf( "stopping APInt::APInt( unsigned, ArrayRef<uint64_t> )\n" );;
+  //printf( "stopping APInt::APInt( unsigned, ArrayRef<uint64_t> )\n" );;
 }
 
 APInt::APInt(unsigned numBits, unsigned numWords, const uint64_t bigVal[])
   : BitWidth(numBits), VAL(0) {
-  printf( "starting APInt::APInt( unsigned, unsigned, const uint64_t[] )\n" );;
+  //printf( "starting APInt::APInt( unsigned, unsigned, const uint64_t[] )"
+  //    "\n" );;
   initFromArray(makeArrayRef(bigVal, numWords));
-  printf( "stopping APInt::APInt( unsigned, unsigned, const uint64_t[] )\n" );;
+  //printf( "stopping APInt::APInt( unsigned, unsigned, const uint64_t[] )"
+  //    "\n" );;
 }
 
 APInt::APInt(unsigned numbits, StringRef Str, uint8_t radix)
   : BitWidth(numbits), VAL(0) {
-  printf( "starting APInt::APInt( unsigned, StringRef, uint8_t )\n" );;
+  //printf( "starting APInt::APInt( unsigned, StringRef, uint8_t )\n" );;
   assert(BitWidth && "Bitwidth too small");
   fromString(numbits, Str, radix);
-  printf( "stopping APInt::APInt( unsigned, StringRef, uint8_t )\n" );;
+  //printf( "stopping APInt::APInt( unsigned, StringRef, uint8_t )\n" );;
 }
 
 APInt& APInt::AssignSlowCase(const APInt& RHS) {
@@ -160,14 +162,14 @@ APInt& APInt::AssignSlowCase(const APInt& RHS) {
 }
 
 APInt& APInt::operator=(uint64_t RHS) {
-  printf( "starting APInt::operator=(uint64_t)\n" );;
+  //printf( "starting APInt::operator=(uint64_t)\n" );;
   if (isSingleWord())
     VAL = RHS;
   else {
     pVal[0] = RHS;
     memset(pVal+1, 0, (getNumWords() - 1) * APINT_WORD_SIZE);
   }
-  printf( "stopping APInt::operator=(uint64_t)\n" );;
+  //printf( "stopping APInt::operator=(uint64_t)\n" );;
   return clearUnusedBits();
 }
 
@@ -219,7 +221,7 @@ APInt& APInt::operator++() {
 /// @returns the borrow out of the subtraction
 /* CAS TODO2: how does this function react to overflow? */
 static bool sub_1(uint64_t x[], unsigned len, uint64_t y) {
-  printf ( "starting APInt's sub_1(uint64_t[], unsigned, uint64_t)\n" );;
+  //printf ( "starting APInt's sub_1(uint64_t[], unsigned, uint64_t)\n" );;
   for (unsigned i = 0; i < len; ++i) {
     uint64_t X = x[i];
     x[i] -= y;
@@ -230,18 +232,21 @@ static bool sub_1(uint64_t x[], unsigned len, uint64_t y) {
       break;  // Remaining digits are unchanged so exit early
     }
   }
-  printf ( "stopping APInt's sub_1(uint64_t[], unsigned, uint64_t)\n" );;
+  //printf ( "stopping APInt's sub_1(uint64_t[], unsigned, uint64_t)\n" );;
   return bool(y);
 }
 
 /// @brief Prefix decrement operator. Decrements the APInt by one.
 APInt& APInt::operator--() {
-  /* CAS TODO2: add a trap here for the int being already at its minimum value */
-  printf ( "starting APInt::operator--()\n" );;
+  /* CAS TODO2: add a trap here for the int being already at its
+     minimum value.
+  */
+  //printf ( "starting APInt::operator--()\n" );;
   if (isSingleWord())
     --VAL;
   else
     sub_1(pVal, getNumWords(), 1);
+  //printf ( "stopping APInt::operator--()\n" );;
   return clearUnusedBits();
 }
 
@@ -280,12 +285,15 @@ APInt& APInt::operator+=(const APInt& RHS) {
 static bool sub(uint64_t *dest, const uint64_t *x, const uint64_t *y,
                 unsigned len) {
   bool borrow = false;
-  printf ( "starting APInt's sub(uint64_t, const uint64_t, const uint64_t, unsigned)\n" );;
+  //printf ( "starting APInt::sub(uint64_t, const uint64_t, const uint64_t, "
+  //    "unsigned)\n" );;
   for (unsigned i = 0; i < len; ++i) {
     uint64_t x_tmp = borrow ? x[i] - 1 : x[i];
     borrow = y[i] > x_tmp || (borrow && x[i] == 0);
     dest[i] = x_tmp - y[i];
   }
+  //printf ( "stopping APInt::sub(uint64_t, const uint64_t, const uint64_t, "
+  //    "unsigned)\n" );;
   return borrow;
 }
 
@@ -293,12 +301,13 @@ static bool sub(uint64_t *dest, const uint64_t *x, const uint64_t *y,
 /// @returns this, after subtraction
 /// @brief Subtraction assignment operator.
 APInt& APInt::operator-=(const APInt& RHS) {
-  printf ( "starting APInt::operator-=(const APInt&)\n" );;
+  //printf ( "starting APInt::operator-=(const APInt&)\n" );;
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
   if (isSingleWord())
     VAL -= RHS.VAL;
   else
     sub(pVal, pVal, RHS.pVal, getNumWords());
+  //printf ( "stopping APInt::operator-=(const APInt&)\n" );;
   return clearUnusedBits();
 }
 
@@ -501,14 +510,14 @@ APInt APInt::operator+(const APInt& RHS) const {
 }
 
 APInt APInt::operator-(const APInt& RHS) const {
-  printf ("starting APInt::operator-().\n" );;
+  //printf ("starting APInt::operator-().\n" );;
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
   if (isSingleWord())  {
-    printf ("   isSingleWord()==true\n" );;
-    printf ("   VAL=%lu, getActiveBits()=%u, BitWidth=%lu \n", 
-    	 VAL, getActiveBits(), (unsigned long)BitWidth  );;
-    printf ("   RHS: VAL=%lu, getActiveBits()=%u, BitWidth=%lu \n", 
-    	 RHS.VAL, RHS.getActiveBits(), (unsigned long)RHS.BitWidth );;
+    //printf ("   isSingleWord()==true\n" );;
+    //printf ("   VAL=%lu, getActiveBits()=%u, BitWidth=%lu \n", 
+    //	 VAL, getActiveBits(), (unsigned long)BitWidth  );;
+    //printf ("   RHS: VAL=%lu, getActiveBits()=%u, BitWidth=%lu \n", 
+    //	 RHS.VAL, RHS.getActiveBits(), (unsigned long)RHS.BitWidth );;
 
     APInt result (BitWidth, VAL - RHS.VAL);
     result.unsignedWrapHappened= ( VAL < RHS.VAL ); // check for -overflow
@@ -520,13 +529,12 @@ APInt APInt::operator-(const APInt& RHS) const {
     result.signedWrapHappened= (int64_t)RHS.VAL > 0 ? 
 	(int64_t)result.VAL > (int64_t)VAL : 
 	(int64_t)result.VAL < (int64_t)VAL;
-    printf ("   result's VAL=%lu\n", result.VAL );;
-    printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
-	result.signedWrapHappened, result.unsignedWrapHappened );;
-    printf ("   result's address=%p.\n", (void*)(&result) );;
-    printf ("stopping APInt::operator-().\n" );;
+    //printf ("   result's VAL=%lu\n", result.VAL );;
+    //printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
+    //	result.signedWrapHappened, result.unsignedWrapHappened );;
+    //printf ("   result's address=%p.\n", (void*)(&result) );;
+    //printf ("stopping APInt::operator-().\n" );;
     return result;
-    //return APInt(BitWidth, VAL - RHS.VAL); /* TODO: delete this */
   }
   printf ("   getNumWords()=%d\n", getNumWords() );;
   APInt Result(BitWidth, 0);
@@ -2059,16 +2067,18 @@ APInt APInt::uadd_ov(const APInt &RHS, bool &Overflow) const {
 
 APInt APInt::ssub_ov(const APInt &RHS, bool &Overflow) const {
   APInt Res = *this - RHS;
-  printf ("starting APInt::ssub_ov().\n" );;
+  //printf ("starting APInt::ssub_ov().\n" );;
   Overflow = isNonNegative() != RHS.isNonNegative() &&
              Res.isNonNegative() != isNonNegative();
+  //printf ("stopping APInt::ssub_ov().\n" );;
   return Res;
 }
 
 APInt APInt::usub_ov(const APInt &RHS, bool &Overflow) const {
   APInt Res = *this-RHS;
-  printf ("starting APInt::usub_ov().\n" );;
+  //printf ("starting APInt::usub_ov().\n" );;
   Overflow = Res.ugt(*this);
+  //printf ("stopping APInt::usub_ov().\n" );;
   return Res;
 }
 

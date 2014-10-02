@@ -106,7 +106,7 @@ class APInt {
   APInt(uint64_t *val, unsigned bits) : BitWidth(bits), pVal(val) 
   //{} initially, this was a blank constructor
   {
-    printf( "starting & stopping APInt::APInt( uint64_t*, unsigned )\n" );;
+    //printf( "starting & stopping APInt::APInt( uint64_t*, unsigned )\n" );;
   }
 
   /// \brief Determine if this APInt just has one word to store value.
@@ -247,14 +247,14 @@ public:
   /// \param isSigned how to treat signedness of val
   APInt(unsigned numBits, uint64_t val, bool isSigned = false)
       : BitWidth(numBits), VAL(0) {
-    printf( "starting APInt::APInt( unsigned, uint64_t, bool )\n" );;
+    //printf( "starting APInt::APInt( unsigned, uint64_t, bool )\n" );;
     assert(BitWidth && "bitwidth too small");
     if (isSingleWord())
       VAL = val;
     else
       initSlowCase(numBits, val, isSigned);
     clearUnusedBits();
-    printf( "stopping APInt::APInt( unsigned, uint64_t, bool )\n" );;
+    //printf( "stopping APInt::APInt( unsigned, uint64_t, bool )\n" );;
   }
 
   /// \brief Construct an APInt of numBits width, initialized as bigVal[].
@@ -291,31 +291,29 @@ public:
   /// Simply makes *this a copy of that.
   /// @brief Copy Constructor.
   APInt(const APInt &that) : BitWidth(that.BitWidth), VAL(0) {
-    printf( "starting APInt::APInt(const APInt &).\n" );;
-    printf( "   src addr=%p, dest addr=%p.\n", 
-	(void*)(&that), (void*)(this) );;
+    //printf( "starting APInt::APInt(const APInt &).\n" );;
+    //printf( "   src addr=%p, dest addr=%p.\n", 
+    //	(void*)(&that), (void*)(this) );;
     assert(BitWidth && "bitwidth too small");
+    signedWrapHappened= that.signedWrapHappened;
+    unsignedWrapHappened= that.unsignedWrapHappened;
     if (isSingleWord())  {
-      printf( "   running single word case\n" );;
+      //printf( "   running single word case\n" );;
       VAL = that.VAL;
-      signedWrapHappened= that.signedWrapHappened;
-      unsignedWrapHappened= that.unsignedWrapHappened;
     } else {
       initSlowCase(that);
     }
-    printf( "stopping APInt::APInt(const APInt &).\n" );;
+    //printf( "stopping APInt::APInt(const APInt &).\n" );;
   }
 
   /// \brief Move Constructor.
   APInt(APInt &&that) : BitWidth(that.BitWidth), VAL(that.VAL) {
-    printf( "starting APInt::APInt(APInt &&) (move constructor).\n" );;
-    printf( "   src.signedWrapHappened=%d, src.unsignedWrapHappened=%d.\n", 
-	that.signedWrapHappened, that.unsignedWrapHappened );;
+    //printf( "starting APInt::APInt(APInt &&) (move constructor).\n" );;
     that.BitWidth = 0;
     signedWrapHappened= that.signedWrapHappened;
     unsignedWrapHappened= that.unsignedWrapHappened;
-    printf( "   src addr=%p, dest addr=%p.\n", (void*)(&that), (void*)this );;
-    printf( "stopping APInt::APInt(APInt &&) (move constructor).\n" );;
+    //printf( "   src addr=%p, dest addr=%p.\n", (void*)(&that), (void*)this );;
+    //printf( "stopping APInt::APInt(APInt &&) (move constructor).\n" );;
   }
 
   /// \brief Destructor.
@@ -681,25 +679,27 @@ public:
   ///
   /// \returns *this after assignment of RHS.
   APInt &operator=(const APInt &RHS) {
-    printf( "starting APInt::operator=(const APInt &).\n" );;
+    //printf( "starting APInt::operator=(const APInt &).\n" );;
     // If the bitwidths are the same, we can avoid mucking with memory
     if (isSingleWord() && RHS.isSingleWord()) {
-      printf( "   is a single word\n" );;
+      //printf( "   is a single word\n" );;
       VAL = RHS.VAL;
       BitWidth = RHS.BitWidth;
       signedWrapHappened= RHS.signedWrapHappened;
       unsignedWrapHappened= RHS.unsignedWrapHappened;
+      //printf( "stopping APInt::operator=(const APInt &).\n" );;
       return clearUnusedBits();
     }
 
+    //printf( "stopping APInt::operator=(const APInt &).\n" );;
     return AssignSlowCase(RHS);
   }
 
   /// @brief Move assignment operator.
   APInt &operator=(APInt &&that) {
-    printf( "starting APInt::operator=(const APInt &&).\n" );;
-    printf( "   &src addr=%p, dest addr=%p, .\n", 
-	    (void*)(&that), (void*)(this) );;
+    //printf( "starting APInt::operator=(const APInt &&).\n" );;
+    //printf( "   &src addr=%p, dest addr=%p, .\n", 
+    //	    (void*)(&that), (void*)(this) );;
     if (!isSingleWord()) {
       // The MSVC STL shipped in 2013 requires that self move assignment be a
       // no-op.  Otherwise algorithms like stable_sort will produce answers
@@ -709,11 +709,9 @@ public:
       delete[] pVal;
     }
 
-    printf("   isSingleWord()=true.\n");
-    printf("   src's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
-	that.signedWrapHappened, that.unsignedWrapHappened );;
-    printf ("   src's address=%p.\n", (void*)(&that) );;
-    printf ("   src's VAL=%lu\n", that.VAL );;
+    //printf("   isSingleWord()=true.\n");
+    //printf ("   src's address=%p.\n", (void*)(&that) );;
+    //printf ("   src's VAL=%lu\n", that.VAL );;
     VAL = that.VAL;
     signedWrapHappened= that.signedWrapHappened;
     unsignedWrapHappened= that.unsignedWrapHappened;
@@ -724,11 +722,9 @@ public:
     that.BitWidth = 0;
     BitWidth = ThatBitWidth;
 
-    printf("   dest's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
-	signedWrapHappened, unsignedWrapHappened );;
-    printf ("   dest's address=%p.\n", (void*)(this) );;
-    printf ("   dest's VAL=%lu\n", VAL );;
-    printf( "stopping APInt::operator=(const APInt &&).\n" );;
+    //printf ("   dest's address=%p.\n", (void*)(this) );;
+    //printf ("   dest's VAL=%lu\n", VAL );;
+    //printf( "stopping APInt::operator=(const APInt &&).\n" );;
     return *this;
   }
 
