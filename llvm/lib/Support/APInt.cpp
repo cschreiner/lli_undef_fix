@@ -520,10 +520,10 @@ APInt APInt::operator+(const APInt& RHS) const {
      [un]signedWrapHappened, above.
   */
   // TODO: check formulas for [un]signedWrapHappened.
-  result.unsignedWrapHappened= ( ult(result, this) || ult(result, RHS) );
-  result.signedWrapHappened= RHS.slt( 0 ) ?
-      result.sgt( this ) :
-      result.slt( this );
+  Result.unsignedWrapHappened= ( Result.ult(*this) || Result.ult(RHS) );
+  Result.signedWrapHappened= RHS.slt( 0 ) ?
+      Result.sgt( *this ) :
+      Result.slt( *this );
   return Result.clearUnusedBits();
 }
 
@@ -560,10 +560,10 @@ APInt APInt::operator-(const APInt& RHS) const {
   sub(Result.pVal, this->pVal, RHS.pVal, getNumWords());
 
   /* note parallels with the single-word cases, above */
-  result.unsignedWrapHappened= ult( RHS );
-  result.signedWrapHappened= RHS.sgt(0) ? 
-      result.sgt(this) :
-      result.slt(this);
+  Result.unsignedWrapHappened= ult( RHS );
+  Result.signedWrapHappened= RHS.sgt(0) ? 
+      Result.sgt(*this) :
+      Result.slt(*this);
   //printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
   //	result.signedWrapHappened, result.unsignedWrapHappened );;
   printf ("stopping APInt::operator-().\n" );;
