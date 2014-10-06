@@ -348,3 +348,95 @@ if ($RUN_PROGRAM) {
 }
 
 ##################################################################
+
+# template 25 lines long
+## ===========================================================================
+## Subroutine name()
+## ===========================================================================
+# Description: 
+#
+# Method: 
+#
+# Notes: 
+#
+# Warnings: 
+#
+# Inputs: 
+#   
+# 
+# Outputs: 
+#   
+#
+# Return Value: 
+#   
+#
+# ============================================================================
+#sub name
+#{{
+#   my( )= @_;
+#}}
+
+package main;
+
+__END__
+
+=pod
+
+=head1 NAME - <filename>
+
+=cut
+
+#put a short (one line) description here
+
+=pod
+
+=head1 SYNOPSIS
+
+=cut
+
+# this needs to be a verbatim paragraph, but not be intented too far.
+# Therefore begin each line with a space.
+
+=pod
+
+ <filename> [debug] [-h|help|-help|--help] [--man] [--revision] 
+ <filename> [debug] ? 
+
+
+=head1 DESCRIPTION
+
+
+=head1 EXTERNAL INFLUENCES
+
+=cut
+
+# consider adding: NOTES, EXAMPLES, RETURN VALUES & ERROR MESSAGES
+
+#=head1 NEW SECTION
+
+=pod
+
+=head1 FILES
+
+=head1 WARNINGS AND CAVEATS
+
+=head1 BUGS AND DEFICIENCIES
+
+=head1 AUTHOR AND COPYRIGHT
+
+
+<filename> was written by John Regeher and others, and modified by
+Christian A. Schreiner .  Copyright (C) <year>-<year> by University of
+Utah.  You may use, examine, or modify this software only in
+accordance with the GNU Public License, or, alternately, by special
+arrangement with the author.  <filename> is released without any
+warranties; if you use it and something breaks, you are responsible
+for cleaning up afterwards.  This notice is precautionary only and
+does not inherently imply publication or release for public use.
+
+=head1 SEE ALSO
+
+perl(1), perldoc(1)
+
+=cut
+
