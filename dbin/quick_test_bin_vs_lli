@@ -29,12 +29,25 @@ function timed_test_one
    time -f %E test_one $test_id
 }
 
+# ==========================================================================
+# main program
+
+# ==========================================================================
+# setup
+if [ ! -d PROBLEMS ]; then
+   mkdir PROBLEMS
+fi
 run_id=`date +%Y%b%d_%H%M%S`
+
+# ==========================================================================
+# start running tests
 test_num=0
 while true; do
    test_id=${run_id}_$test_num
    echo running $test_id at `date`
-   #;;timed_test_one $test_id
+   timed_test_one $test_id
    test_num=$(($test_num+1))
 done
 
+# ==========================================================================
+# end of program
