@@ -17,7 +17,7 @@ function test_one
    echo clang for native:
    clang -I $TUUT/all/include/csmith-2.2.0 -o $progname.bin $progname.c
 
-   $progname.bin > $test_id.bin.out
+   ./$progname.bin > $test_id.bin.out
    ls -l $test_id.bin.out #;;
    $TUUT/all/bin/lli --force-interpreter $progname.bc > $test_id.lli.out
 
@@ -25,10 +25,11 @@ function test_one
    diff_status=$?
    echo diff status=\"$diff_status\" '(should be 0)'
    if [ $diff_status -eq "0" ]; then
-      mv $progname.c GOOD
+      echo test case passes
+      #;;mv $progname.c GOOD
    else
       echo WARNING: different output on test $test_id.
-      mv $progname.* $test_id.*.out BAD
+      #;;mv $progname.* $test_id.*.out BAD
    fi
 
    return $diff_status
@@ -89,7 +90,8 @@ test_num=0
 while true; do
    test_id=test_${run_id}_$test_num
    echo running $test_id at `date`
-   timed_test_one $test_id
+   #;;timed_test_one $test_id
+   test_one $test_id
    test_num=$(($test_num+1))
    exit 1 #;;
 done
