@@ -7,10 +7,10 @@ function test_one
    progname=test_${test_id}
 
    csmith > $progname.c
-   clang -I $TUUT/all/include/csmith-2.2.0 --emit-llvm $progname.c
+   clang -I $TUUT/all/include/csmith-2.2.0 -emit-llvm $progname.c
 
    a.out > $test_id.bin.out
-   lli --force-interpreter aa.bc > $test_id.lli.out
+   lli --force-interpreter $test_id.bc > $test_id.lli.out
 
    diff -q $test_id.bin.out $test_id.lli.out
    diff_status=$?
@@ -28,7 +28,24 @@ function test_one
 function timed_test_one
 {
    test_id=$1
-   /usr/bin/time -f %E test_one $test_id
+
+   start_time=`date +%s`
+   test_one $test_id
+   status=$?
+   stop_time=`date +%s`
+   
+   delta_s=$(( $stop-time - $start_time ))
+   delta_min=$(( $delta_s / 60 ))
+   delta_rem_s=$(( $delta_s % 60 ))
+
+   if [ $status -eq 0 ]; then
+      dest_dir=GOOD
+   else
+      dest_dir=BAD
+   fi
+   printf "  elapsed time %u:%2.2u (%u s)\n" \
+      $delta_min $delta_rem_s $delta_s | \
+      tee $dest_dir/$test_id.times
 }
 
 # ==========================================================================
