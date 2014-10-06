@@ -9,7 +9,7 @@ function test_one
 
    progname=${test_id}
 
-   csmith > $progname.c
+   (ulimit 10; csmith > $progname.c )
    echo clang for llvm:
    clang -I $TUUT/all/include/csmith-2.2.0 -c -emit-llvm $progname.c 
    echo -e '\n'
@@ -17,8 +17,9 @@ function test_one
    echo clang for native:
    clang -I $TUUT/all/include/csmith-2.2.0 -o $progname.bin $progname.c
 
-   ./$progname.bin > $test_id.bin.out
-   $TUUT/all/bin/lli --force-interpreter $progname.bc > $test_id.lli.out
+   (ulimit -t 120; ./$progname.bin > $test_id.bin.out )
+   (ulimit -t 120; \
+    $TUUT/all/bin/lli --force-interpreter $progname.bc > $test_id.lli.out )
 
    diff -q $test_id.bin.out $test_id.lli.out
    diff_status=$?
