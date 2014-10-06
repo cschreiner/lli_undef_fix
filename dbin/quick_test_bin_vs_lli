@@ -1,5 +1,8 @@
 #!/bin/bash
 
+separator_half="======================================="
+separator=${separator_half}${separator_half}
+
 function test_one
 {
    test_id=$1
@@ -7,7 +10,11 @@ function test_one
    progname=test_${test_id}
 
    csmith > $progname.c
-   clang -I $TUUT/all/include/csmith-2.2.0 -c -emit-llvm $progname.c
+   echo clang for llvm:
+   clang -I $TUUT/all/include/csmith-2.2.0 -c -emit-llvm $progname.c 
+   echo -e '\n'
+   echo $separator
+   echo clang for native:
    clang -I $TUUT/all/include/csmith-2.2.0 -o $progname.bin $progname.c
 
    $progname.bin > $test_id.bin.out
@@ -31,7 +38,14 @@ function timed_test_one
    test_id=$1
 
    start_time=`date +%s`
-   test_one $test_id
+   (
+     echo -e '\n\n\n' 
+     echo $separator$separator
+     echo $separator$separator
+     echo test_id=$test_id
+     echo -e '\n'
+     test_one $test_id 
+   ) > $test_id.full.out
    status=$?
    stop_time=`date +%s`
    
@@ -48,6 +62,7 @@ function timed_test_one
       $delta_min $delta_rem_s $delta_s | \
       tee $dest_dir/$test_id.summary
    echo "diff status=" $status >> $dest_dir/$test_id.summary
+   mv $test_id.full.out $dest_dir
 }
 
 # ==========================================================================
@@ -71,6 +86,7 @@ while true; do
    echo running $test_id at `date`
    timed_test_one $test_id
    test_num=$(($test_num+1))
+   exit 1 #;;
 done
 
 # ==========================================================================
