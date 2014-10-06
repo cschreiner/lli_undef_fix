@@ -26,6 +26,7 @@ function test_one
    if [ $diff_status -eq "0" ]; then
       echo test case passes
       mv $progname.c GOOD
+      rm $test_id.*
    else
       echo WARNING: different output on test $test_id.
       mv $progname.* $test_id.*.out BAD
@@ -62,7 +63,7 @@ function timed_test_one
    else
       dest_dir=BAD
    fi
-   printf "  elapsed time %u:%2.2u (%u s)\n" \
+   printf "   elapsed time %u:%2.2u (%u s)\n" \
       $delta_min $delta_rem_s $delta_s | \
       tee $dest_dir/$test_id.summary
    echo "diff status=" $status >> $dest_dir/$test_id.summary
@@ -91,7 +92,6 @@ while true; do
    echo running $test_id at `date`
    timed_test_one $test_id
    test_num=$(($test_num+1))
-   exit 1 #;;
 done
 
 # ==========================================================================
