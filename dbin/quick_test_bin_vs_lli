@@ -15,9 +15,11 @@ function test_one
    diff -q $test_id.bin.out $test_id.lli.out
    diff_status=$?
    echo diff status=\"$diff_status\" '(should be 0)'
-   if [ $diff_status -ne "0" ]; then
+   if [ $diff_status -eq "0" ]; then
+      mv $progname.c GOOD
+   else
       echo WARNING: different output on test $test_id.
-      mv $progname.c $test_id.*.out PROBLEMS
+      mv $progname.c $test_id.*.out BAD
    fi
 
    return $diff_status
@@ -26,7 +28,7 @@ function test_one
 function timed_test_one
 {
    test_id=$1
-   time -f %E test_one $test_id
+   /usr/bin/time -f %E test_one $test_id
 }
 
 # ==========================================================================
@@ -34,8 +36,11 @@ function timed_test_one
 
 # ==========================================================================
 # setup
-if [ ! -d PROBLEMS ]; then
-   mkdir PROBLEMS
+if [ ! -d BAD ]; then
+   mkdir BAD
+fi
+if [ ! -d GOOD ]; then
+   mkdir GOOD
 fi
 run_id=`date +%Y%b%d_%H%M%S`
 
