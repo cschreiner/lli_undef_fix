@@ -7,9 +7,10 @@ function test_one
    progname=test_${test_id}
 
    csmith > $progname.c
-   clang -I $TUUT/all/include/csmith-2.2.0 -emit-llvm $progname.c
+   clang -I $TUUT/all/include/csmith-2.2.0 -c -emit-llvm $progname.c
+   clang -I $TUUT/all/include/csmith-2.2.0 -o $progname.bin $progname.c
 
-   a.out > $test_id.bin.out
+   $progname.bin > $test_id.bin.out
    lli --force-interpreter $test_id.bc > $test_id.lli.out
 
    diff -q $test_id.bin.out $test_id.lli.out
@@ -19,7 +20,7 @@ function test_one
       mv $progname.c GOOD
    else
       echo WARNING: different output on test $test_id.
-      mv $progname.c $test_id.*.out BAD
+      mv $progname.* $test_id.*.out BAD
    fi
 
    return $diff_status
@@ -34,7 +35,7 @@ function timed_test_one
    status=$?
    stop_time=`date +%s`
    
-   delta_s=$(( $stop-time - $start_time ))
+   delta_s=$(( $stop_time - $start_time ))
    delta_min=$(( $delta_s / 60 ))
    delta_rem_s=$(( $delta_s % 60 ))
 
@@ -45,7 +46,8 @@ function timed_test_one
    fi
    printf "  elapsed time %u:%2.2u (%u s)\n" \
       $delta_min $delta_rem_s $delta_s | \
-      tee $dest_dir/$test_id.times
+      tee $dest_dir/$test_id.summary
+   echo "diff status=" $status >> $dest_dir/$test_id.summary
 }
 
 # ==========================================================================
