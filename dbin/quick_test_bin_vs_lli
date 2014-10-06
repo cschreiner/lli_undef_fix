@@ -1,2 +1,40 @@
-#!/bin/sh
+#!/bin/bash
+
+function test_one
+{
+   test_id=$1
+
+   progname=test_${test_id}
+
+   csmith > $progname.c
+   clang -I $TUUT/all/include/csmith-2.2.0 --emit-llvm $progname.c
+
+   a.out > $test_id.bin.out
+   lli --force-interpreter aa.bc > $test_id.lli.out
+
+   diff -q $test_id.bin.out $test_id.lli.out
+   diff_status=$?
+   echo diff status=\"$diff_status\" '(should be 0)'
+   if [ $diff_status -ne "0" ]; then
+      echo WARNING: different output on test $test_id.
+      mv $progname.c $test_id.*.out PROBLEMS
+   fi
+
+   return $diff_status
+}
+
+function timed_test_one
+{
+   test_id=$1
+   time -f %E test_one $test_id
+}
+
+run_id=`date +%Y%b%d_%H%M%S`
+test_num=0
+while true; do
+   test_id=${run_id}_$test_num
+   echo running $test_id at `date`
+   #;;timed_test_one $test_id
+   test_num=$(($test_num+1))
+done
 
