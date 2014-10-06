@@ -7,7 +7,7 @@ function test_one
 {
    test_id=$1
 
-   progname=test_${test_id}
+   progname=${test_id}
 
    csmith > $progname.c
    echo clang for llvm:
@@ -18,7 +18,7 @@ function test_one
    clang -I $TUUT/all/include/csmith-2.2.0 -o $progname.bin $progname.c
 
    $progname.bin > $test_id.bin.out
-   lli --force-interpreter $test_id.bc > $test_id.lli.out
+   $TUUT/all/bin/lli --force-interpreter $progname.bc > $test_id.lli.out
 
    diff -q $test_id.bin.out $test_id.lli.out
    diff_status=$?
@@ -45,9 +45,12 @@ function timed_test_one
      echo test_id=$test_id
      echo -e '\n'
      test_one $test_id 
-   ) > $test_id.full.out
-   status=$?
+     echo $? > $test_id.status_file
+   ) 2>&1 | tee $test_id.full.out >> /dev/null
    stop_time=`date +%s`
+   status=`cat $test_id.status_file`
+   rm $test_id.status_file
+   echo status=\"$status\"
    
    delta_s=$(( $stop_time - $start_time ))
    delta_min=$(( $delta_s / 60 ))
@@ -62,6 +65,7 @@ function timed_test_one
       $delta_min $delta_rem_s $delta_s | \
       tee $dest_dir/$test_id.summary
    echo "diff status=" $status >> $dest_dir/$test_id.summary
+   touch $test_id.full.out
    mv $test_id.full.out $dest_dir
 }
 
@@ -82,7 +86,7 @@ run_id=`date +%Y%b%d_%H%M%S`
 # start running tests
 test_num=0
 while true; do
-   test_id=${run_id}_$test_num
+   test_id=test_${run_id}_$test_num
    echo running $test_id at `date`
    timed_test_one $test_id
    test_num=$(($test_num+1))
