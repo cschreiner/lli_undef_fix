@@ -82,6 +82,7 @@ class APInt {
   */
   bool signedWrapHappened;
   bool unsignedWrapHappened;
+  bool poisoned;
 
   /// This union is used to store the integer value. When the
   /// integer bit-width <= 64, it uses VAL, otherwise it uses pVal.
@@ -109,6 +110,7 @@ class APInt {
     //printf( "starting APInt::APInt( uint64_t*, unsigned )\n" );;
     signedWrapHappened= false;
     unsignedWrapHappened= false;
+    poisoned= false;
     //printf( "stopping APInt::APInt( uint64_t*, unsigned )\n" );;
   }
 
@@ -258,6 +260,7 @@ public:
       initSlowCase(numBits, val, isSigned);
     signedWrapHappened= false;
     unsignedWrapHappened= false;
+    poisoned= false;
     clearUnusedBits();
     //printf( "stopping APInt::APInt( unsigned, uint64_t, bool )\n" );;
   }
@@ -302,6 +305,7 @@ public:
     assert(BitWidth && "bitwidth too small");
     signedWrapHappened= that.signedWrapHappened;
     unsignedWrapHappened= that.unsignedWrapHappened;
+    poisoned= that.poisoned;
     if (isSingleWord())  {
       //printf( "   running single word case\n" );;
       VAL = that.VAL;
@@ -317,6 +321,7 @@ public:
     that.BitWidth = 0;
     signedWrapHappened= that.signedWrapHappened;
     unsignedWrapHappened= that.unsignedWrapHappened;
+    poisoned= false;
     //printf( "   src addr=%p, dest addr=%p.\n", (void*)(&that), (void*)this );;
     //printf( "stopping APInt::APInt(APInt &&) (move constructor).\n" );;
   }
@@ -337,6 +342,7 @@ public:
     */
     signedWrapHappened= false;
     unsignedWrapHappened= false;
+    poisoned= false;
   }
 
   /// \brief Returns whether this instance's value was created by an operation
@@ -346,6 +352,12 @@ public:
   /// \brief Returns whether this instance's value was created by an operation
   /// that did an unsigned wraparound.
   inline bool didUnsignedWrap() const { return unsignedWrapHappened; }
+
+  /// \brief Returns whether this value is poisoned.
+  inline bool getPoisoned() const { return poisoned; }
+
+  /// \brief sets whether this value is poisoned
+  inline void setPoisoned(const bool pp ) { poisoned= pp; }
 
   /// \brief Returns whether this instance allocated memory.
   bool needsCleanup() const { return !isSingleWord(); }
