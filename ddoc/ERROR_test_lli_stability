@@ -1,0 +1,5 @@
+LLVM ERROR: Cannot load value of type { i64, i32 }!
+Error fires from llvm/lib/ExecutionEngine/ExecutionEngine.cpp line 1083,
+apparently because code is trying to load a data structure of 2 ints into a
+register, which can only take one int.
+
