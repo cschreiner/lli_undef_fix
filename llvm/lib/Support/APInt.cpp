@@ -75,15 +75,27 @@ inline static unsigned getDigit(char cdigit, uint8_t radix) {
 }
 
 
+/* CAS TODO2: does this need a documentation note telling caller to
+   call setPoisoned(), or does this method need to have an extra parm
+   isPoisoned?  
+*/
 void APInt::initSlowCase(unsigned numBits, uint64_t val, bool isSigned) {
   pVal = getClearedMemory(getNumWords());
   pVal[0] = val;
   if (isSigned && int64_t(val) < 0)
     for (unsigned i = 1; i < getNumWords(); ++i)
       pVal[i] = -1ULL;
+  // CAS TODO3: check this: why is numBits not used?
 }
 
+/* CAS TODO2: does this need a documentation note telling caller to
+   call setPoisoned(), or does this method need to have an extra parm
+   isPoisoned?  
+*/
 void APInt::initSlowCase(const APInt& that) {
+  signedWrapHappened= that.signedWrapHappened;
+  unsignedWrapHappened= that.unsignedWrapHappened;
+  poisoned= that.poisoned;
   pVal = getMemory(getNumWords());
   memcpy(pVal, that.pVal, getNumWords() * APINT_WORD_SIZE);
 }
@@ -91,6 +103,10 @@ void APInt::initSlowCase(const APInt& that) {
 void APInt::initFromArray(ArrayRef<uint64_t> bigVal) {
   assert(BitWidth && "Bitwidth too small");
   assert(bigVal.data() && "Null pointer detected!");
+  /* CAS TODO3: why is isSingleWord() a valid test?  It tests whether
+     the original value of this is a single word, not whether the new
+     value in bigVal is a single word.  Right?
+   */
   if (isSingleWord())
     VAL = bigVal[0];
   else {
@@ -111,6 +127,7 @@ APInt::APInt(unsigned numBits, ArrayRef<uint64_t> bigVal)
   initFromArray(bigVal);
   signedWrapHappened= false;
   unsignedWrapHappened= false;
+  poisoned= false;
   //printf( "stopping APInt::APInt( unsigned, ArrayRef<uint64_t> )\n" );;
 }
 
@@ -121,6 +138,7 @@ APInt::APInt(unsigned numBits, unsigned numWords, const uint64_t bigVal[])
   initFromArray(makeArrayRef(bigVal, numWords));
   signedWrapHappened= false;
   unsignedWrapHappened= false;
+  poisoned= false;
   //printf( "stopping APInt::APInt( unsigned, unsigned, const uint64_t[] )"
   //    "\n" );;
 }
@@ -132,6 +150,7 @@ APInt::APInt(unsigned numbits, StringRef Str, uint8_t radix)
   fromString(numbits, Str, radix);
   signedWrapHappened= false;
   unsignedWrapHappened= false;
+  poisoned= false;
   //printf( "stopping APInt::APInt( unsigned, StringRef, uint8_t )\n" );;
 }
 
@@ -139,6 +158,10 @@ APInt& APInt::AssignSlowCase(const APInt& RHS) {
   // Don't do anything for X = X
   if (this == &RHS)
     return *this;
+
+  signedWrapHappened= RHS.signedWrapHappened;
+  unsignedWrapHappened= RHS.unsignedWrapHappened;
+  poisoned= RHS.poisoned;
 
   if (BitWidth == RHS.getBitWidth()) {
     // assume same bit-width single-word case is already handled
@@ -198,6 +221,7 @@ void APInt::Profile(FoldingSetNodeID& ID) const {
 /// 1 is returned if there is a carry out, otherwise 0 is returned.
 /// @returns the carry of the addition.
 static bool add_1(uint64_t dest[], uint64_t x[], unsigned len, uint64_t y) {
+  // asdf: check this for wraparound
   for (unsigned i = 0; i < len; ++i) {
     dest[i] = y + x[i];
     if (dest[i] < y)
@@ -212,10 +236,12 @@ static bool add_1(uint64_t dest[], uint64_t x[], unsigned len, uint64_t y) {
 
 /// @brief Prefix increment operator. Increments the APInt by one.
 APInt& APInt::operator++() {
-  if (isSingleWord())
+  // asdf: check this for wraparound
+  if (isSingleWord()) {
     ++VAL;
-  else
+  } else {
     add_1(pVal, pVal, getNumWords(), 1);
+  }
   return clearUnusedBits();
 }
 
@@ -507,7 +533,7 @@ APInt APInt::operator+(const APInt& RHS) const {
     /* Note the similarity to the multi-word formulas for
        [un]signedWrapHappened, below.
     */
-    // TODO: check formulas for [un]signedWrapHappened.
+    // TODO: test this vs the new checkWrapAfter1WordAdd() method
     result.unsignedWrapHappened= ((result.VAL < VAL) || (result.VAL < RHS.VAL) );
     result.signedWrapHappened= (int64_t)RHS.VAL < 0 ? 
 	(int64_t)result.VAL > (int64_t)VAL : 
@@ -539,12 +565,8 @@ APInt APInt::operator-(const APInt& RHS) const {
 
     APInt result (BitWidth, VAL - RHS.VAL);
     /* note parallels with the multi-word cases, below */
+    // CAS TODO: check this vs the new checkWrapAfter1WordSub(~) method. 
     result.unsignedWrapHappened= ( VAL < RHS.VAL ); // check for -overflow
-    /* TODO: add a similar check for signedWrapHappened. Use
-       getSignedMinValue(numBits) and getSignedMaxValue(numBits) as
-       needed.  The below expression was originally designed for
-       addition, check the adaption for subtraction.
-    */
     result.signedWrapHappened= (int64_t)RHS.VAL > 0 ? 
 	(int64_t)result.VAL > (int64_t)VAL : 
 	(int64_t)result.VAL < (int64_t)VAL;
