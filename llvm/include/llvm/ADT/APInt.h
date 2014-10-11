@@ -359,6 +359,55 @@ public:
   /// \brief sets whether this value is poisoned
   inline void setPoisoned(const bool pp ) { poisoned= pp; }
 
+  /// \brief determines if signed or unsigned wraparound happened
+  /// after a single-word addition
+  inline static APInt& checkWrapAfter1WordAdd( 
+      APInt& dest, uint64_t left, uint64_t right )
+  {
+    dest.unsignedWrapHappened= (dest.VAL < left) || (dest.VAL < right);
+    dest.signedWrapHappened= (int64_t)right< 0 ? 
+	(int64_t)dest.VAL > (int64_t)left: 
+	(int64_t)dest.VAL < (int64_t)left;
+    return dest;
+  }
+
+  /// \brief determines if signed or unsigned wraparound happened
+  /// after a single-word subtraction
+  inline static APInt& checkWrapAfter1WordSub( 
+      APInt& dest, uint64_t left, uint64_t right )
+  {
+    dest.unsignedWrapHappened= left < right; // check for -overflow
+    dest.signedWrapHappened= (int64_t)right > 0 ? 
+	(int64_t)dest.VAL > (int64_t)left : 
+	(int64_t)dest.VAL < (int64_t)left;
+    return dest;
+  }
+
+  /// \brief determines if signed or unsigned wraparound happened
+  /// after a multi-word addition
+  inline static APInt& checkWrapAfterMultiWordAdd( 
+      APInt& dest, APInt& left, APInt& right )
+  {
+    dest.unsignedWrapHappened= ( dest.ult(left) || dest.ult(right) );
+    dest.signedWrapHappened= right.slt( 0 ) ?
+      dest.sgt( left ) :
+      dest.slt( left );
+
+    return dest;
+  }
+
+  /// \brief determines if signed or unsigned wraparound happened
+  /// after a multi-word addition
+  inline static APInt& checkWrapAfterMultiWordSub( 
+      APInt& dest, APInt& left, APInt& right )
+  {
+    dest.unsignedWrapHappened= left.ult( right );
+    dest.signedWrapHappened= right.sgt(0) ?
+	dest.sgt(left) :
+	dest.slt(left);
+    return dest;
+  }
+
   /// \brief Returns whether this instance allocated memory.
   bool needsCleanup() const { return !isSingleWord(); }
 
