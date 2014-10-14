@@ -126,29 +126,13 @@ int testAddWrapBehavior1Word( const unsigned numBits,
    */
 int test_wraparound_behavior( int argc, char* argv[] )
 {{
-    cout << "hi\n";;
-  return 
+  int result= 0;
+  result+= 
+      testAddWrapBehavior1Word( 16, 0xfff0, true, '+', 0x0020, true, 16 );
+  result+= 
       testAddWrapBehavior1Word( 16, 0xfff0, false, '+', 0x0020, false, 16 );
+  return result;
 }}
-
-#if 0 //;;
-{{
-  llvm::APInt aa( 16, 0xfff0, false );
-  llvm::APInt bb( 16, 0x0020, false );
-  llvm::APInt cc= aa + bb;
-  //printf( "16 bits: \"%s\" + \"%s\" = \"%s\" (should be 0x0010) \n", 
-  //	   aa.toString(10, false), bb.toString(10, false), 
-  //	   cc.toString(10, false) );
-
-  cout << "16 bits: \"" << aa.toString(10, false)  << "\" + \"" << 
-      bb.toString(10, false)  << "\" = \"" << cc.toString(10, false) << 
-      "\" (should be 0x0010) \n";
-  cout << "   (" << aa.flagsToString() << ")+(" << bb.flagsToString() <<
-      ") = (" << cc.flagsToString() << ") \n";
-  // TODO: add something here to print out the wrap and poison flags	  
-  return 0;
-}}
-#endif
 
 /*** --------------------------------------------------------------------------
    * function main()
