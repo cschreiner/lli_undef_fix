@@ -56,6 +56,27 @@ using namespace std;
    */
 
 /*** --------------------------------------------------------------------------
+   * function boolSignedToString()
+   * --------------------------------------------------------------------------
+   * Description: 
+   *
+   * Method: 
+   *
+   * Reentrancy: 
+   *
+   * Inputs: 
+   *  sign: true to give "s" (signed), false for "u" (unsigned)
+   *    
+   * Outputs: none
+   *
+   * Return Value: "s" or "u"
+   */
+std::string boolSignedToString( bool sign )
+{{
+  return (std::string) ( sign ? "s" : "u" );
+}}
+
+/*** --------------------------------------------------------------------------
    * function testAddWrapBehavior1Word()
    * --------------------------------------------------------------------------
    * Description: 
@@ -98,9 +119,12 @@ int testAddWrapBehavior1Word( const unsigned numBits,
     assert(0);
   } //switch
 
-  cout << numBits << " bits: \"" << aa.toString(10, false)  << "\" + \"" << 
-      bb.toString(10, false)  << "\" = \"" << cc.toString(10, false) << 
-    "\" (should be " << expect << ") \n";
+  cout << numBits << " bits: \"" << 
+      aa.toString(10, false)  << boolSignedToString(aaSign) <<
+      "\" " << op << " \"" << 
+      bb.toString(10, false)  << boolSignedToString(bbSign) <<
+      "\" = \"" << cc.toString(10, false) << 
+      "\" (should be " << expect << ") \n";
   cout << "   (" << aa.flagsToString() << ")+(" << bb.flagsToString() <<
       ") = (" << cc.flagsToString() << ") \n";
   return 0;
