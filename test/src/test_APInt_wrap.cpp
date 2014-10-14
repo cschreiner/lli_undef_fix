@@ -35,7 +35,10 @@
    */
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include "llvm/ADT/APInt.h"
+
+using namespace std;
 
 /*** **************************************************************************
    *   declarations
@@ -72,13 +75,18 @@
    */
 int test_wraparound_behavior( int argc, char* argv[] )
 {{
-    llvm::APInt aa( 16, 0xfff0, false );
-    llvm::APInt bb( 16, 0x0020, false );
-    llvm::APInt cc= aa + bb;
-    printf ( "16 bits: \"%s\" + \"%s\" = \"%s\" (should be 0x0010) \n", 
-	     aa.toString(10, false), bb.toString(10, false), 
-             cc.toString(10, false) );
-    return 0;
+  llvm::APInt aa( 16, 0xfff0, false );
+  llvm::APInt bb( 16, 0x0020, false );
+  llvm::APInt cc= aa + bb;
+  //printf( "16 bits: \"%s\" + \"%s\" = \"%s\" (should be 0x0010) \n", 
+  //	   aa.toString(10, false), bb.toString(10, false), 
+  //	   cc.toString(10, false) );
+
+  cout << "16 bits: \"" << aa.toString(10, false)  << "\" + \"" << 
+      bb.toString(10, false)  << "\" = \"" << cc.toString(10, false) << 
+      "\" (should be 0x0010) \n";
+	  
+  return 0;
 }}
 
 /*** --------------------------------------------------------------------------
