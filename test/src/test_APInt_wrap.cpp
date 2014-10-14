@@ -56,6 +56,57 @@ using namespace std;
    */
 
 /*** --------------------------------------------------------------------------
+   * function testAddWrapBehavior1Word()
+   * --------------------------------------------------------------------------
+   * Description: 
+   *	induce wraparound, and prints out the answers.
+   *
+   * Method: 
+   *
+   * Reentrancy: 
+   *
+   * Inputs: 
+   *    numBits: the number of significant bits in these integers
+   *    aaVal, aaSign: number of the first operand, and true iff it is signed
+   *    op: '+' for addition, '-' for subtraction
+   *    bbVal, bbSign: number of the second operand, and true iff it is signed
+   *    expect: the expected result
+   *
+   * Outputs: none
+   *
+   * Return Value: a value recommended for the return value for main(~)
+   *
+   */
+int testAddWrapBehavior1Word( const unsigned numBits, 
+			      const uint64_t aaVal, const bool aaSign,
+			      char op, 
+			      const uint64_t bbVal, const bool bbSign, 
+			      const uint64_t expect )
+{{
+  llvm::APInt aa( numBits, aaVal, aaSign );
+  llvm::APInt bb( numBits, bbVal, bbSign );
+  llvm::APInt cc;
+
+  switch ( op ) {
+  case '+':
+    cc= aa + bb;
+    break;
+  case '-':
+    cc= aa - bb;
+    break;
+  default:
+    assert(0);
+  } //switch
+
+  cout << numBits << " bits: \"" << aa.toString(10, false)  << "\" + \"" << 
+      bb.toString(10, false)  << "\" = \"" << cc.toString(10, false) << 
+    "\" (should be " << expect << ") \n";
+  cout << "   (" << aa.flagsToString() << ")+(" << bb.flagsToString() <<
+      ") = (" << cc.flagsToString() << ") \n";
+  return 0;
+}}
+
+/*** --------------------------------------------------------------------------
    * function test_wraparound_behavior()
    * --------------------------------------------------------------------------
    * Description: runs some APInts through various exercises that should 
@@ -75,6 +126,13 @@ using namespace std;
    */
 int test_wraparound_behavior( int argc, char* argv[] )
 {{
+    cout << "hi\n";;
+  return 
+      testAddWrapBehavior1Word( 16, 0xfff0, false, '+', 0x0020, false, 16 );
+}}
+
+#if 0 //;;
+{{
   llvm::APInt aa( 16, 0xfff0, false );
   llvm::APInt bb( 16, 0x0020, false );
   llvm::APInt cc= aa + bb;
@@ -90,6 +148,7 @@ int test_wraparound_behavior( int argc, char* argv[] )
   // TODO: add something here to print out the wrap and poison flags	  
   return 0;
 }}
+#endif
 
 /*** --------------------------------------------------------------------------
    * function main()
