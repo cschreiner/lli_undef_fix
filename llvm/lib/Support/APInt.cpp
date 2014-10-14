@@ -2361,11 +2361,13 @@ std::string APInt::toString(unsigned Radix = 10, bool Signed = true) const {
   return S.str();
 }
 
-std::string APInt::flagsToString() {
-  return "psu=" + 
-      (poisoned ? "1" : "0") +  
-      (signedWrapHappened ? "1" : "0") +  
-      (unsignedWrapHappened ? "1" : "0");
+std::string APInt::flagsToString() const {
+  return (std::string) 
+    ( "psu=" + 
+      (std::string)(poisoned ? "1" : "0") +  
+      (std::string)(signedWrapHappened ? "1" : "0") +  
+      (std::string)(unsignedWrapHappened ? "1" : "0")
+      );
 }
 
 void APInt::dump() const {
