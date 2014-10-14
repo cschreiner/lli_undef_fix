@@ -120,10 +120,10 @@ int testAddWrapBehavior1Word( const unsigned numBits,
   } //switch
 
   cout << numBits << " bits: \"" << 
-      aa.toString(10, false)  << boolSignedToString(aaSign) <<
+      aa.toString(16, false)  << boolSignedToString(aaSign) <<
       "\" " << op << " \"" << 
-      bb.toString(10, false)  << boolSignedToString(bbSign) <<
-      "\" = \"" << cc.toString(10, false) << 
+      bb.toString(16, false)  << boolSignedToString(bbSign) <<
+      "\" = \"" << cc.toString(16, false) << 
       "\" (should be " << expect << ") \n";
   cout << "   (" << aa.flagsToString() << ")+(" << bb.flagsToString() <<
       ") = (" << cc.flagsToString() << ") \n";
@@ -148,7 +148,7 @@ int testAddWrapBehavior1Word( const unsigned numBits,
    * Return Value: a value recommended for the return value for main(~)
    *
    */
-int test_wraparound_behavior( int argc, char* argv[] )
+int testWrapBehavior( int argc, char* argv[] )
 {{
   int result= 0;
   result+= 
@@ -181,7 +181,7 @@ int main( int argc, char* argv[] )
 {{
   int argc2= argc- 2;
   char** argv2= &( argv[2] );
-  return test_wraparound_behavior( argc2, argv2 );
+  return testWrapBehavior( argc2, argv2 );
 }}
 
 
