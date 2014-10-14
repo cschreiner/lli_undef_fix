@@ -85,7 +85,9 @@ int test_wraparound_behavior( int argc, char* argv[] )
   cout << "16 bits: \"" << aa.toString(10, false)  << "\" + \"" << 
       bb.toString(10, false)  << "\" = \"" << cc.toString(10, false) << 
       "\" (should be 0x0010) \n";
-	  
+  cout << "   (" << aa.flagsToString() << ")+(" << bb.flagsToString() <<
+      ") = (" << cc.flagsToString() << ") \n";
+  // TODO: add something here to print out the wrap and poison flags	  
   return 0;
 }}
 

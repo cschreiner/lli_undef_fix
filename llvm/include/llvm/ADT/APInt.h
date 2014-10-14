@@ -1559,6 +1559,10 @@ public:
   /// for the string.
   std::string toString(unsigned Radix, bool Signed) const;
 
+  /// \brief return a string representation of the flags, e.g. poison, 
+  /// signedWrapHappened, unsignedWrapHappened.
+  std::string flagsToString() const;
+
   /// \returns a byte-swapped representation of this APInt Value.
   APInt LLVM_ATTRIBUTE_UNUSED_RESULT byteSwap() const;
 

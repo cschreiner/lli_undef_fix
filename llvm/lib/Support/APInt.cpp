@@ -2361,6 +2361,12 @@ std::string APInt::toString(unsigned Radix = 10, bool Signed = true) const {
   return S.str();
 }
 
+std::string APInt::flagsToString() {
+  return "psu=" + 
+      (poisoned ? "1" : "0") +  
+      (signedWrapHappened ? "1" : "0") +  
+      (unsignedWrapHappened ? "1" : "0");
+}
 
 void APInt::dump() const {
   SmallString<40> S, U;
