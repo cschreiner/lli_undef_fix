@@ -536,13 +536,13 @@ APInt APInt::operator+(const APInt& RHS) const {
     // TODO: test this vs the new checkWrapAfter1WordAdd() method
     result.unsignedWrapHappened= ((result.VAL < VAL) || (result.VAL < RHS.VAL) );
     {
-      bool thisIsPositive0= ((int64_t) VAL) >= 0;
-      bool rhsIsPositive0= ((int64_t) RHS.VAL) >= 0;
-      bool resultIsPositive0= ((int64_t) result.VAL) >= 0;
+      bool thisIs0Positive= ((int64_t) VAL) >= 0;
+      bool rhsIs0Positive= ((int64_t) RHS.VAL) >= 0;
+      bool resultIs0Positive= ((int64_t) result.VAL) >= 0;
       
       result.signedWrapHappened= 
-	  (thisIsPositive0 == rhsIsPositive0) && 
-	  ( thisIsPositive0 != resultIsPositive0 );
+	  (thisIs0Positive == rhsIs0Positive) && 
+	  ( thisIs0Positive != resultIs0Positive );
     }
      
     return result;
