@@ -33,6 +33,8 @@
    *   includes
    * **************************************************************************
    */
+#include <stdlib.h>
+#include "llvm/ADT/APInt.h"
 
 /*** **************************************************************************
    *   declarations
@@ -48,6 +50,61 @@
    *   source code
    * **************************************************************************
    */
+
+/*** --------------------------------------------------------------------------
+   * function test_wraparound_behavior()
+   * --------------------------------------------------------------------------
+   * Description: runs some APInts through various exercises that should 
+   *	induce wraparound, and prints out the answers.
+   *
+   * Method: 
+   *
+   * Reentrancy: 
+   *
+   * Inputs: 
+   *    argc and argv: as passed to main(~)
+   *
+   * Outputs: none
+   *
+   * Return Value: a value recommended for the return value for main(~)
+   *
+   */
+void test_wraparound_behavior( int argc, char* argv[] )
+{{
+    APInt aa( 16, 0xfff0, true );
+    APInt bb( 16, 0xff20, true );
+    APInt cc= aa + bb;
+    printf ( "16 bits: \"%s\" + \"%s\" = \"%s\" (should be 0x0010) \n", 
+	     aa.toString(), bb.toString(), cc.toString() );
+    return 0;
+}}
+
+/*** --------------------------------------------------------------------------
+   * function main()
+   * --------------------------------------------------------------------------
+   * Description: main function
+   *
+   * Method: 
+   *
+   * Reentrancy: 
+   *
+   * Inputs: 
+   *  argc: the number of command line arguments
+   *  argv[]: array of pointers to strings, each string holds a command 
+   *	line argument
+   *    
+   * Outputs: none
+   *
+   * Return Value: 0 for success, otherwise for failure
+   *
+   */
+int main( int argc, char* argv[] )
+{{
+  int argc2= argc- 2;
+  char** argv2= &( argv[2] );
+  return test_wraparound_behavior( argc2, argv2 );
+}}
+
 
 // template is 16 lines long
 /*** --------------------------------------------------------------------------
