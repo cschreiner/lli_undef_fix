@@ -1,15 +1,24 @@
 LLVM reference:
+---------------
 intermediate language reference: http://llvm.org/docs/LangRef.html
 http://www.llvm.org/docs/GettingStarted.html#checkout-llvm-from-subversion
 
 llvm build infrastructure: http://llvm.org/docs/LLVMBuild.html
 
+Phi instruction:
+http://stackoverflow.com/questions/11485531/what-exactly-phi-instruction-does-and-how-to-use-it-in-llvm
+John describes the Phi instruction as describing the two branches of an
+if-instruction.
+
+
 Reference of Reference in C++:
+-------------------------------
 
 http://stackoverflow.com/questions/5590978/reference-of-reference-in-c
 
 
 General C++:
+------------
 
 instance cloning:
 Google search: does c++ = assignment clone an instance
@@ -18,15 +27,35 @@ C++ tutorial: http://www.cplusplus.com/doc/tutorial/classes/
 
 
 GDB:
+----
 http://ftp.gnu.org/old-gnu/Manuals/gdb/html_node/gdb_93.html
 
 
 Integer arithmetic overflow:
+----------------------------
 google search: test for signed integer overflow
-http://c-faq.com/misc/intovf.html
+http://c-faq.com/misc/intovf.html (uses limits.h)
 http://www.fefe.de/intof.html
 http://stackoverflow.com/questions/199333/best-way-to-detect-integer-overflow-in-c-c
+	Note: I went with anonymous's "Feb 9 '09 at 14:06" answer of:
+	signed int r, a, b, s;
+	r = a+b;
+	s = a>=0;
+	if (s == (b>=0) && s != (r>=0))
+	{
+	    // overflow
+	} 
+
 http://stackoverflow.com/questions/2633661/how-to-check-integer-overflow-in-c
 
+also:
+https://www.securecoding.cert.org/confluence/display/seccode/INT32-C.+Ensure+that+operations+on+signed+integers+do+not+result+in+overflow?showComments=false
+
+Making and Using Libraries
+--------------------------
+http://www.delorie.com/djgpp/doc/ug/larger/archives.html
+
+
 (end of file)
+-------------
 
