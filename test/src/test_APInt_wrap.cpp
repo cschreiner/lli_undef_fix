@@ -33,6 +33,7 @@
    *   includes
    * **************************************************************************
    */
+#include <stdio.h>
 #include <stdlib.h>
 #include "llvm/ADT/APInt.h"
 
@@ -69,13 +70,14 @@
    * Return Value: a value recommended for the return value for main(~)
    *
    */
-void test_wraparound_behavior( int argc, char* argv[] )
+int test_wraparound_behavior( int argc, char* argv[] )
 {{
-    APInt aa( 16, 0xfff0, true );
-    APInt bb( 16, 0xff20, true );
-    APInt cc= aa + bb;
+    llvm::APInt aa( 16, 0xfff0, false );
+    llvm::APInt bb( 16, 0x0020, false );
+    llvm::APInt cc= aa + bb;
     printf ( "16 bits: \"%s\" + \"%s\" = \"%s\" (should be 0x0010) \n", 
-	     aa.toString(), bb.toString(), cc.toString() );
+	     aa.toString(10, false), bb.toString(10, false), 
+             cc.toString(10, false) );
     return 0;
 }}
 
