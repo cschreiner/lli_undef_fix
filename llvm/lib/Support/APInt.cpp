@@ -539,10 +539,12 @@ APInt APInt::operator+(const APInt& RHS) const {
 	(this->isNonNegative() == RHS.isNonNegative() ) && 
 	(this->isNonNegative() != result.isNonNegative() );
 
-    printf( "   " 
-	"Is0Positive for this,rhs,result,signedWrapHappened= %d%d%d%d\n",
-	this->isNonNegative(), RHS.isNonNegative(), result.isNonNegative(),
-	result.signedWrapHappened );; 
+    #if 0 //;;
+      printf( "   " 
+	  "Is0Positive for this,rhs,result,signedWrapHappened= %d%d%d%d\n",
+	  this->isNonNegative(), RHS.isNonNegative(), result.isNonNegative(),
+	  result.signedWrapHappened );; 
+    #endif
      
     return result;
   }
