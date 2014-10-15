@@ -102,7 +102,7 @@ int testAddWrapBehavior1Word( const unsigned numBits,
 			      const uint64_t aaVal, const bool aaSign,
 			      char op, 
 			      const uint64_t bbVal, const bool bbSign, 
-			      const uint64_t expect, std::string flagExpect )
+			      std::string expect, std::string flagExpect )
 {{
   llvm::APInt aa( numBits, aaVal, aaSign );
   llvm::APInt bb( numBits, bbVal, bbSign );
@@ -124,7 +124,7 @@ int testAddWrapBehavior1Word( const unsigned numBits,
       "\" " << op << " \"" << 
       bb.toString(16, false)  << boolSignedToString(bbSign) <<
       "\" = \"" << cc.toString(16, false) << 
-      "\" (should be " << std::hex << expect << std::dec << ") \n";
+      "\" (should be " << expect << ") \n";
   cout << "   (" << aa.flagsToString() << ")+(" << bb.flagsToString() <<
       ") = (" << cc.flagsToString() << 
       ", should be \"" << flagExpect << "\") \n";
@@ -155,15 +155,26 @@ int testWrapBehavior( int argc, char* argv[] )
 
   cout << "\n" << "test unsigned 16-bit wrap\n";
   result+= testAddWrapBehavior1Word( 
-      16, 0xfff0, true, '+', 0x0020, true, 16, "001" );
+      16, 0xfff0, true, '+', 0x0020, true, "16=0x10", "001" );
   result+= testAddWrapBehavior1Word( 
-      16, 0xfff0, false, '+', 0x0020, false, 16, "001" );
+      16, 0xfff0, false, '+', 0x0020, false, "16=0x10", "001" );
 
   cout << "\n" << "test signed 16-bit wrap\n";
   result+= testAddWrapBehavior1Word( 
-      16, 0x7ff1, true, '+', 0x0031, true, 0x8022, "010" );
+      16, 0x7ff1, true, '+', 0x0031, true, "0x8022", "010" );
   result+= testAddWrapBehavior1Word( 
-      16, 0x7ff1, false, '+', 0x0031, false, 0x8022, "010" );
+      16, 0x7ff1, false, '+', 0x0031, false, "0x8022", "010" );
+
+  cout << "\n" << "test unsigned 64-bit wrap\n";
+  result+= testAddWrapBehavior1Word( 
+      64, 0xdd426c4dfd91efa1, true, '+', 0xab1b79340627716f, true, 
+      "0x885DE58203B96110+carry", "011" );
+  result+= testAddWrapBehavior1Word( 
+      64, 0xdd426c4dfd91efa1, false, '+', 0xab1b79340627716f, false, 
+      "0x885DE58203B96110+carry", "011" );
+
+
+   
   return result;
 }}
 
