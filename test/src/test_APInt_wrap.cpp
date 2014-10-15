@@ -124,7 +124,8 @@ int testAddWrapBehavior1Word( const unsigned numBits,
       "\" " << op << " \"" << 
       bb.toString(16, false)  << boolSignedToString(bbSign) <<
       "\" = \"" << cc.toString(16, false) << 
-      "\" (should be " << expect << ") \n";
+      "\"\n";
+  cout << "   (should be " << expect << ") \n";
   cout << "   (" << aa.flagsToString() << ")+(" << bb.flagsToString() <<
       ") = (" << cc.flagsToString() << 
       ", should be \"" << flagExpect << "\") \n";
