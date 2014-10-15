@@ -102,7 +102,7 @@ int testAddWrapBehavior1Word( const unsigned numBits,
 			      const uint64_t aaVal, const bool aaSign,
 			      char op, 
 			      const uint64_t bbVal, const bool bbSign, 
-			      const uint64_t expect )
+			      const uint64_t expect, std::string flagExpect )
 {{
   llvm::APInt aa( numBits, aaVal, aaSign );
   llvm::APInt bb( numBits, bbVal, bbSign );
@@ -124,9 +124,10 @@ int testAddWrapBehavior1Word( const unsigned numBits,
       "\" " << op << " \"" << 
       bb.toString(16, false)  << boolSignedToString(bbSign) <<
       "\" = \"" << cc.toString(16, false) << 
-      "\" (should be " << expect << ") \n";
+      "\" (should be " << std::hex << expect << ") \n";
   cout << "   (" << aa.flagsToString() << ")+(" << bb.flagsToString() <<
-      ") = (" << cc.flagsToString() << ") \n";
+      ") = (" << cc.flagsToString() << 
+      ", should be \"" << flagExpect << "\") \n";
   return 0;
 }}
 
@@ -151,10 +152,18 @@ int testAddWrapBehavior1Word( const unsigned numBits,
 int testWrapBehavior( int argc, char* argv[] )
 {{
   int result= 0;
-  result+= 
-      testAddWrapBehavior1Word( 16, 0xfff0, true, '+', 0x0020, true, 16 );
-  result+= 
-      testAddWrapBehavior1Word( 16, 0xfff0, false, '+', 0x0020, false, 16 );
+
+  cout << "\n" << "test unsigned 16-bit wrap\n";
+  result+= testAddWrapBehavior1Word( 
+      16, 0xfff0, true, '+', 0x0020, true, 16, "001" );
+  result+= testAddWrapBehavior1Word( 
+      16, 0xfff0, false, '+', 0x0020, false, 16, "001" );
+
+  cout << "\n" << "test signed 16-bit wrap\n";
+  result+= testAddWrapBehavior1Word( 
+      16, 0x7ff1, true, '+', 0x0031, true, 0x8022, "010" );
+  result+= testAddWrapBehavior1Word( 
+      16, 0x7ff1, false, '+', 0x0031, false, 0x8022, "010" );
   return result;
 }}
 
