@@ -347,17 +347,38 @@ public:
 
   /// \brief Returns whether this instance's value was created by an operation
   /// that did a signed wraparound.
-  inline bool didSignedWrap() const { return signedWrapHappened; }
+  inline bool didSignedWrap() const {{ return signedWrapHappened; }}
 
   /// \brief Returns whether this instance's value was created by an operation
   /// that did an unsigned wraparound.
-  inline bool didUnsignedWrap() const { return unsignedWrapHappened; }
+  inline bool didUnsignedWrap() const {{ return unsignedWrapHappened; }}
 
   /// \brief Returns whether this value is poisoned.
-  inline bool getPoisoned() const { return poisoned; }
+  inline bool getPoisoned() const {{ return poisoned; }}
 
-  /// \brief sets whether this value is poisoned
-  inline void setPoisoned(const bool pp ) { poisoned= pp; }
+  /// \brief sets whether this value is poisoned.  A caller usually
+  /// has to use externally available information (such as the
+  /// presence NSW or NUW flags in LLVM assembler) plus wraparound
+  /// flags to determine if an instance holds a poisoned value, in
+  /// which case the caller should use this method to record the
+  /// poisoning.
+  inline void setPoisoned(const bool pp ) {{ poisoned= pp; }}
+
+  /// \brief designates this value as poisoned if a signed wrap
+  /// occurred, yet the wrapBanned argument indicates the wrap should
+  /// not have happened.
+  inline void poisonIfSignedWrap( const bool wrapBanned ) 
+  {{
+    if ( signedWrapHappened && wrapBanned )  { poisoned= true; }
+  }}
+
+  /// \brief designates this value as poisoned if an unsigned wrap
+  /// occurred, yet the wrapBanned argument indicates the wrap should
+  /// not have happened.
+  inline void poisonIfUnsignedWrap( const bool wrapBanned ) 
+  {{
+    if ( unsignedWrapHappened && wrapBanned )  { poisoned= true; }
+  }}
 
   /// \brief determines if signed or unsigned wraparound happened
   /// after a single-word addition
@@ -1559,7 +1580,7 @@ public:
   /// for the string.
   std::string toString(unsigned Radix, bool Signed) const;
 
-  /// \brief return a string representation of the flags, e.g. poison, 
+  /// \brief return a string representation of the flags, i.e. poison, 
   /// signedWrapHappened, unsignedWrapHappened.
   std::string flagsToString() const;
 
