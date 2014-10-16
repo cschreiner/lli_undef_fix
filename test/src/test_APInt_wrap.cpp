@@ -176,6 +176,22 @@ int testWrapBehavior( int argc, char* argv[] )
       "0x885DE58203B96110+carry", "001" );
       // NO, the above should NOT trigger a signed wraparound.
 
+  cout << "\n" << "test signed 64-bit +wrap\n";
+  result+= testAddWrapBehavior1Word( 
+      64, 0x489cb8cc34cea777, true, '+', 0x7eff7f26ccacae73, true, 
+      "0xc79c37f3017b55ea", "010" );
+  result+= testAddWrapBehavior1Word( 
+      64, 0x489cb8cc34cea777, false, '+', 0x7eff7f26ccacae73, false, 
+      "0xc79c37f3017b55ea", "010" );
+
+  cout << "\n" << "test signed 64-bit -wrap\n";
+  result+= testAddWrapBehavior1Word( 
+      64, 0xc376c6cc749c9312, true, '+', 0x9872e5300d9f57e4, true, 
+      "0x5be9abfc823beaf6+carry", "011" );
+  result+= testAddWrapBehavior1Word( 
+      64, 0xc376c6cc749c9312, false, '+', 0x9872e5300d9f57e4, false, 
+      "0x5be9abfc823beaf6+carry", "011" );
+
 
    
   return result;
