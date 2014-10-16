@@ -530,14 +530,7 @@ APInt APInt::operator+(const APInt& RHS) const {
   if (isSingleWord())  {
     // assume unsigned
     APInt result= APInt(BitWidth, VAL + RHS.VAL);
-    /* Note the similarity to the multi-word formulas for
-       [un]signedWrapHappened, below.
-    */
-    // TODO: test this vs the new checkWrapAfter1WordAdd() method
-    result.unsignedWrapHappened= ((result.VAL < VAL) || (result.VAL < RHS.VAL) );
-    result.signedWrapHappened= 
-	(this->isNonNegative() == RHS.isNonNegative() ) && 
-	(this->isNonNegative() != result.isNonNegative() );
+    checkWrapAfter1WordAdd( result, *this, RHS );
 
     #if 0 //;;
       printf( "   " 
