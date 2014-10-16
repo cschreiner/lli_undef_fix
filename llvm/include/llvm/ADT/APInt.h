@@ -383,12 +383,13 @@ public:
   /// \brief determines if signed or unsigned wraparound happened
   /// after a single-word addition
   inline static APInt& checkWrapAfter1WordAdd( 
-      APInt& dest, uint64_t left, uint64_t right )
+      APInt& dest, const APInt& left, const APInt& right )
   {
-    dest.unsignedWrapHappened= (dest.VAL < left) || (dest.VAL < right);
-    dest.signedWrapHappened= (int64_t)right< 0 ? 
-	(int64_t)dest.VAL > (int64_t)left: 
-	(int64_t)dest.VAL < (int64_t)left;
+    dest.unsignedWrapHappened= (dest.VAL < left.VAL) || (dest.VAL < right.VAL);
+    dest.signedWrapHappened= 
+	(left.isNonNegative() == right.isNonNegative() ) && 
+	(left.isNonNegative() != dest.isNonNegative() );
+
     return dest;
   }
 
