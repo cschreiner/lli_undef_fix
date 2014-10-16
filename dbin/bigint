@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # do a simple math operation on an arbitrary sized integer
 
-use Math::BitInt;
+use Math::BigInt;
 
 our $left= shift @ARGV;
 our $op= shift @ARGV;
@@ -22,7 +22,7 @@ if ( $op eq "+" )  {
 }
 
 print "result=\"" . $big_result->bstr() . "\"\n";
-print "   =\"0x" . $big_result->as_hex() . "\"\n";
+print "   =\"" . $big_result->as_hex() . "\"\n";
 
 exit 0
 
