@@ -22,3 +22,19 @@ test unsigned 64-bit wrap
 64 bits: "DD426C4DFD91EFA1u" + "AB1B79340627716Fu" = "885DE58203B96110"
    (should be 0x885DE58203B96110+carry) 
    (psu=000)+(psu=000) = (psu=001, should be "001") 
+
+test signed 64-bit +wrap
+64 bits: "489CB8CC34CEA777s" + "7EFF7F26CCACAE73s" = "C79C37F3017B55EA"
+   (should be 0xc79c37f3017b55ea) 
+   (psu=000)+(psu=000) = (psu=010, should be "010") 
+64 bits: "489CB8CC34CEA777u" + "7EFF7F26CCACAE73u" = "C79C37F3017B55EA"
+   (should be 0xc79c37f3017b55ea) 
+   (psu=000)+(psu=000) = (psu=010, should be "010") 
+
+test signed 64-bit -wrap
+64 bits: "C376C6CC749C9312s" + "9872E5300D9F57E4s" = "5BE9ABFC823BEAF6"
+   (should be 0x5be9abfc823beaf6+carry) 
+   (psu=000)+(psu=000) = (psu=011, should be "011") 
+64 bits: "C376C6CC749C9312u" + "9872E5300D9F57E4u" = "5BE9ABFC823BEAF6"
+   (should be 0x5be9abfc823beaf6+carry) 
+   (psu=000)+(psu=000) = (psu=011, should be "011") 
