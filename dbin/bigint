@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+# do a simple math operation on an arbitrary sized integer
+
+use Math::BitInt;
+
+our $left= shift @ARGV;
+our $op= shift @ARGV;
+our $right= shift @ARGV;
+
+our $big_left= Math::BigInt->new( $left );
+our $big_right= Math::BigInt->new( $right );
+our $big_result= $big_left->copy();
+
+if ( $op eq "+" )  {
+   $big_result->badd( $big_right );
+} elsif ( $op eq "-" )  {
+   $big_result->bsub( $big_right );
+} elsif ( $op eq "*" )  {
+   $big_result->bmul( $big_right );
+} elsif ( $op eq "/" )  {
+   $big_result->bdiv( $big_right );
+}
+
+print "result=\"" . $big_result->bstr() . "\"\n";
+print "   =\"0x" . $big_result->as_hex() . "\"\n";
+
+exit 0
+
+# end of script
+
