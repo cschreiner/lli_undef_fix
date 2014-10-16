@@ -192,7 +192,13 @@ int testWrapBehavior( int argc, char* argv[] )
       64, 0xc376c6cc749c9312, false, '+', 0x9872e5300d9f57e4, false, 
       "0x5be9abfc823beaf6+carry", "011" );
 
-
+  cout << "\n" << "test signed 64-bit nowrap\n";
+  result+= testAddWrapBehavior1Word( 
+      64, 0xc44b14f908111d7f, true, '+', 0x391fc3be9d90f9b4, true, 
+      "0xfd6ad8b7a5a21733", "000" );
+  result+= testAddWrapBehavior1Word( 
+      64, 0xc44b14f908111d7f, false, '+', 0x391fc3be9d90f9b4, false, 
+      "0xfd6ad8b7a5a21733", "000" );
    
   return result;
 }}
