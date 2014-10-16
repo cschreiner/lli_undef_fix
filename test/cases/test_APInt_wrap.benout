@@ -1,0 +1,24 @@
+
+test unsigned 16-bit wrap
+16 bits: "FFF0s" + "20s" = "10"
+   (should be 16=0x10) 
+   (psu=000)+(psu=000) = (psu=001, should be "001") 
+16 bits: "FFF0u" + "20u" = "10"
+   (should be 16=0x10) 
+   (psu=000)+(psu=000) = (psu=001, should be "001") 
+
+test signed 16-bit wrap
+16 bits: "7FF1s" + "31s" = "8022"
+   (should be 0x8022) 
+   (psu=000)+(psu=000) = (psu=010, should be "010") 
+16 bits: "7FF1u" + "31u" = "8022"
+   (should be 0x8022) 
+   (psu=000)+(psu=000) = (psu=010, should be "010") 
+
+test unsigned 64-bit wrap
+64 bits: "DD426C4DFD91EFA1s" + "AB1B79340627716Fs" = "885DE58203B96110"
+   (should be 0x885DE58203B96110+carry) 
+   (psu=000)+(psu=000) = (psu=001, should be "001") 
+64 bits: "DD426C4DFD91EFA1u" + "AB1B79340627716Fu" = "885DE58203B96110"
+   (should be 0x885DE58203B96110+carry) 
+   (psu=000)+(psu=000) = (psu=001, should be "001") 
