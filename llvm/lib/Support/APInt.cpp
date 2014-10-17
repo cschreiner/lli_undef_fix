@@ -221,7 +221,7 @@ void APInt::Profile(FoldingSetNodeID& ID) const {
 /// 1 is returned if there is a carry out, otherwise 0 is returned.
 /// @returns the carry of the addition.
 static bool add_1(uint64_t dest[], uint64_t x[], unsigned len, uint64_t y) {
-  // asdf: check this for wraparound
+  /* CAS TODO2: note that wraparound is checked at the caller function */
   for (unsigned i = 0; i < len; ++i) {
     dest[i] = y + x[i];
     if (dest[i] < y)
@@ -270,9 +270,7 @@ static bool sub_1(uint64_t x[], unsigned len, uint64_t y) {
 
 /// @brief Prefix decrement operator. Decrements the APInt by one.
 APInt& APInt::operator--() {
-  /* CAS TODO2: add a trap here for the int being already at its
-     minimum value.
-  */
+  /* CAS TODO: check this for wrapping */
   //printf ( "starting APInt::operator--()\n" );;
   if (isSingleWord())
     --VAL;
@@ -288,7 +286,7 @@ APInt& APInt::operator--() {
 /// @brief General addition of 64-bit integer arrays
 static bool add(uint64_t *dest, const uint64_t *x, const uint64_t *y,
                 unsigned len) {
-  /* CAS TODO2: add a trap here for the int being already at its max value */
+  /* CAS TODO2: note that wraparound is checked at the caller function */
   bool carry = false;
   for (unsigned i = 0; i< len; ++i) {
     uint64_t limit = std::min(x[i],y[i]); // must come first in case dest == x
@@ -303,10 +301,17 @@ static bool add(uint64_t *dest, const uint64_t *x, const uint64_t *y,
 /// @brief Addition assignment operator.
 APInt& APInt::operator+=(const APInt& RHS) {
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
-  if (isSingleWord())
-    VAL += RHS.VAL;
-  else {
+  APInt orig_this= APInt( *this );
+  if (isSingleWord()) {
+    /* CAS TODO2: see if there is a way of optimizing this AND optimizing the
+       wrapround checks without having a temporary value, along these lines:
+       VAL += RHS.VAL;
+    */
+    VAL+= RHS.VAL;
+    checkWrapAfter1WordAdd( *this, orig_this, RHS );
+  } else {
     add(pVal, pVal, RHS.pVal, getNumWords());
+    checkWrapAfterMultiWordAdd( *this, orig_this, RHS ); 
   }
   return clearUnusedBits();
 }
@@ -551,6 +556,7 @@ APInt APInt::operator+(const APInt& RHS) const {
   Result.signedWrapHappened= RHS.slt( 0 ) ?
       Result.sgt( *this ) :
       Result.slt( *this );
+  checkWrapAfterMultiWordAdd( Result, *this, RHS );
   return Result.clearUnusedBits();
 }
 
@@ -2106,12 +2112,14 @@ APInt APInt::sadd_ov(const APInt &RHS, bool &Overflow) const {
   APInt Res = *this+RHS;
   Overflow = isNonNegative() == RHS.isNonNegative() &&
              Res.isNonNegative() != isNonNegative();
+  Res.signedWrapHappened= Overflow;
   return Res;
 }
 
 APInt APInt::uadd_ov(const APInt &RHS, bool &Overflow) const {
   APInt Res = *this+RHS;
   Overflow = Res.ult(RHS);
+  Res.unsignedWrapHappened= Overflow;
   return Res;
 }
 
@@ -2120,6 +2128,7 @@ APInt APInt::ssub_ov(const APInt &RHS, bool &Overflow) const {
   //printf ("starting APInt::ssub_ov().\n" );;
   Overflow = isNonNegative() != RHS.isNonNegative() &&
              Res.isNonNegative() != isNonNegative();
+  Res.signedWrapHappened= Overflow;
   //printf ("stopping APInt::ssub_ov().\n" );;
   return Res;
 }
@@ -2128,6 +2137,7 @@ APInt APInt::usub_ov(const APInt &RHS, bool &Overflow) const {
   APInt Res = *this-RHS;
   //printf ("starting APInt::usub_ov().\n" );;
   Overflow = Res.ugt(*this);
+  Res.unsignedWrapHappened= Overflow;
   //printf ("stopping APInt::usub_ov().\n" );;
   return Res;
 }
@@ -2135,7 +2145,9 @@ APInt APInt::usub_ov(const APInt &RHS, bool &Overflow) const {
 APInt APInt::sdiv_ov(const APInt &RHS, bool &Overflow) const {
   // MININT/-1  -->  overflow.
   Overflow = isMinSignedValue() && RHS.isAllOnesValue();
-  return sdiv(RHS);
+  APInt result= sdiv(RHS);
+  result.signedWrapHappened= Overflow;
+  return result;
 }
 
 APInt APInt::smul_ov(const APInt &RHS, bool &Overflow) const {
@@ -2145,6 +2157,7 @@ APInt APInt::smul_ov(const APInt &RHS, bool &Overflow) const {
     Overflow = Res.sdiv(RHS) != *this || Res.sdiv(*this) != RHS;
   else
     Overflow = false;
+  Res.signedWrapHappened= Overflow;
   return Res;
 }
 
@@ -2155,6 +2168,7 @@ APInt APInt::umul_ov(const APInt &RHS, bool &Overflow) const {
     Overflow = Res.udiv(RHS) != *this || Res.udiv(*this) != RHS;
   else
     Overflow = false;
+  Res.unsignedWrapHappened= Overflow;
   return Res;
 }
 
@@ -2168,6 +2182,9 @@ APInt APInt::sshl_ov(unsigned ShAmt, bool &Overflow) const {
   else
     Overflow = ShAmt >= countLeadingOnes();
   
+  APInt result= ( *this << ShAmt );
+  result.signedWrapHappened= Overflow; 
+  // CAS TODO2: check that signedWrapHappened is the right wrap flag.
   return *this << ShAmt;
 }
 
