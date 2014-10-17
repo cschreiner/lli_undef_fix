@@ -110,7 +110,7 @@ int testAddWrapBehaviorMultiWord( const unsigned numBits,
   /* EXPERIMENTAL: this entire method is still an experiment 
      CAS TODO2: resolve this.
   */
-  uinit64_t* aa_bigval_ptr= { 1, 2 };
+  uint64_t* aa_bigval_ptr= { 1, 2 };
   llvm::ArrayRef<uint64_t> aa_bigval( aa_bigval_ptr, 2 );
   llvm::APInt aa( numBits, aaVal, aaSign );
   llvm::APInt bb( numBits, bbVal, bbSign );
