@@ -102,18 +102,25 @@ std::string boolSignedToString( bool sign )
    *
    */
 int testAddWrapBehaviorMultiWord( const unsigned numBits, 
-			      const uint64_t* aaVal, const bool aaSign,
-			      char op, 
-			      const uint64_t* bbVal, const bool bbSign, 
-			      std::string expect, std::string flagExpect )
+    const uint64_t* aaBigValArray, const size_t aaBigValArrayLen,
+    char op, 
+    const uint64_t* bbBigValArray, const size_t bbBigValArrayLen,
+    std::string expect, std::string flagExpect )
 {{
-  /* EXPERIMENTAL: this entire method is still an experiment 
+  /* EXPERIMENTAL: this entire method is still an experiment.
      CAS TODO2: resolve this.
+     CAS TODO2: update the preamble comment accordingly.
   */
-  uint64_t aaBigValArray[]= { 1, 2 };
-  llvm::ArrayRef<uint64_t> aa_bigval( aaBigValArray, 2 );
-  llvm::APInt aa( numBits, aaBigValArray );
-  llvm::APInt bb( numBits, bbVal, bbSign );
+  #if 0 // documenting the basic idea:
+    uint64_t aaBigValArray[]= { 1, 2 };
+    llvm::ArrayRef<uint64_t> aa_bigval( aaBigValArray, 2 );
+    llvm::APInt aa( numBits, aaBigValArray );
+  #endif
+  llvm::ArrayRef<uint64_t> aaBigVal( aaBigValArray, aaBigValArrayLen );
+  llvm::APInt aa( numBits, aaBigVal );
+  llvm::ArrayRef<uint64_t> bbBigVal( bbBigValArray, bbBigValArrayLen );
+  llvm::APInt bb( numBits, bbBigVal );
+
   llvm::APInt cc;
 
   switch ( op ) {
