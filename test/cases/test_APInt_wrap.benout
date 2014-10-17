@@ -38,3 +38,11 @@ test signed 64-bit -wrap
 64 bits: "C376C6CC749C9312u" + "9872E5300D9F57E4u" = "5BE9ABFC823BEAF6"
    (should be 0x5be9abfc823beaf6+carry) 
    (psu=000)+(psu=000) = (psu=011, should be "011") 
+
+test signed 64-bit nowrap
+64 bits: "C44B14F908111D7Fs" + "391FC3BE9D90F9B4s" = "FD6AD8B7A5A21733"
+   (should be 0xfd6ad8b7a5a21733) 
+   (psu=000)+(psu=000) = (psu=000, should be "000") 
+64 bits: "C44B14F908111D7Fu" + "391FC3BE9D90F9B4u" = "FD6AD8B7A5A21733"
+   (should be 0xfd6ad8b7a5a21733) 
+   (psu=000)+(psu=000) = (psu=000, should be "000") 
