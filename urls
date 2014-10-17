@@ -1,6 +1,6 @@
 LLVM reference:
 ---------------
-intermediate language reference: http://llvm.org/docs/LangRef.html
+intermediate language reference manual: http://llvm.org/docs/LangRef.html
 http://www.llvm.org/docs/GettingStarted.html#checkout-llvm-from-subversion
 
 llvm build infrastructure: http://llvm.org/docs/LLVMBuild.html
