@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include "llvm/ADT/APInt.h"
+#include "llvm/ADT/ArrayRef.h"
 
 using namespace std;
 
@@ -77,10 +78,74 @@ std::string boolSignedToString( bool sign )
 }}
 
 /*** --------------------------------------------------------------------------
+   * function testAddWrapBehaviorMultiWord()
+   * --------------------------------------------------------------------------
+   * Description: 
+   *	Do a math operation on multi-word APInts, and prints out the answers.
+   * 	This is intended for testing the ability to catch wraparound and 
+   *	poison values.
+   *
+   * Method: 
+   *
+   * Reentrancy: 
+   *
+   * Inputs: 
+   *    numBits: the number of significant bits in these integers
+   *    aaVal, aaSign: number of the first operand, and true iff it is signed
+   *    op: '+' for addition, '-' for subtraction
+   *    bbVal, bbSign: number of the second operand, and true iff it is signed
+   *    expect: the expected result
+   *
+   * Outputs: none
+   *
+   * Return Value: a value recommended for the return value for main(~)
+   *
+   */
+int testAddWrapBehaviorMultiWord( const unsigned numBits, 
+			      const uint64_t* aaVal, const bool aaSign,
+			      char op, 
+			      const uint64_t* bbVal, const bool bbSign, 
+			      std::string expect, std::string flagExpect )
+{{
+  /* EXPERIMENTAL: this entire method is still an experiment 
+     CAS TODO2: resolve this.
+  */
+  llvm::ArrayRef<uint64_t> aa_bigval= llvm::ArrayRef<uint64_t>( { 1, 2}, 2 );
+  llvm::APInt aa( numBits, aaVal, aaSign );
+  llvm::APInt bb( numBits, bbVal, bbSign );
+  llvm::APInt cc;
+
+  switch ( op ) {
+  case '+':
+    cc= aa + bb;
+    break;
+  case '-':
+    cc= aa - bb;
+    break;
+  default:
+    assert(0);
+  } //switch
+
+  cout << numBits << " bits: \"" << 
+      aa.toString(16, false)  << boolSignedToString(aaSign) <<
+      "\" " << op << " \"" << 
+      bb.toString(16, false)  << boolSignedToString(bbSign) <<
+      "\" = \"" << cc.toString(16, false) << 
+      "\"\n";
+  cout << "   (should be " << expect << ") \n";
+  cout << "   (" << aa.flagsToString() << ")+(" << bb.flagsToString() <<
+      ") = (" << cc.flagsToString() << 
+      ", should be \"" << flagExpect << "\") \n";
+  return 0;
+}}
+
+/*** --------------------------------------------------------------------------
    * function testAddWrapBehavior1Word()
    * --------------------------------------------------------------------------
    * Description: 
-   *	induce wraparound, and prints out the answers.
+   *	Do a math operation on multi-word APInts, and prints out the answers.
+   * 	This is intended for testing the ability to catch wraparound and 
+   *	poison values.
    *
    * Method: 
    *
