@@ -91,9 +91,11 @@ std::string boolSignedToString( bool sign )
    *
    * Inputs: 
    *    numBits: the number of significant bits in these integers
-   *    aaVal, aaSign: number of the first operand, and true iff it is signed
+   *	aaBigValArray: an array of uint64_ts, giving the bits of integer aa
+   *	aaBigValArrayLen: the number of uint64_ts in aaBigValArray
    *    op: '+' for addition, '-' for subtraction
-   *    bbVal, bbSign: number of the second operand, and true iff it is signed
+   *	bbBigValArray: an array of uint64_ts, giving the bits of integer bb
+   *	bbBigValArrayLen: the number of uint64_ts in bbBigValArray
    *    expect: the expected result
    *
    * Outputs: none
@@ -103,7 +105,7 @@ std::string boolSignedToString( bool sign )
    */
 int testAddWrapBehaviorMultiWord( const unsigned numBits, 
     const uint64_t* aaBigValArray, const size_t aaBigValArrayLen,
-    char op, 
+    const char op, 
     const uint64_t* bbBigValArray, const size_t bbBigValArrayLen,
     std::string expect, std::string flagExpect )
 {{
@@ -111,7 +113,7 @@ int testAddWrapBehaviorMultiWord( const unsigned numBits,
      CAS TODO2: resolve this.
      CAS TODO2: update the preamble comment accordingly.
   */
-  #if 0 // documenting the basic idea:
+  #if 0 // documenting the basic idea of how to generate a multiword APInt:
     uint64_t aaBigValArray[]= { 1, 2 };
     llvm::ArrayRef<uint64_t> aa_bigval( aaBigValArray, 2 );
     llvm::APInt aa( numBits, aaBigValArray );
@@ -135,9 +137,9 @@ int testAddWrapBehaviorMultiWord( const unsigned numBits,
   } //switch
 
   cout << numBits << " bits: \"" << 
-      aa.toString(16, false)  << boolSignedToString(aaSign) <<
+      aa.toString(16, false)  << 
       "\" " << op << " \"" << 
-      bb.toString(16, false)  << boolSignedToString(bbSign) <<
+      bb.toString(16, false)  << 
       "\" = \"" << cc.toString(16, false) << 
       "\"\n";
   cout << "   (should be " << expect << ") \n";
