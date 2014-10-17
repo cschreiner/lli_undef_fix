@@ -55,6 +55,11 @@ Making and Using Libraries
 --------------------------
 http://www.delorie.com/djgpp/doc/ug/larger/archives.html
 
+Debugging
+---------
+Using gdb: How do I watch the execution of my program?
+http://www.unknownroad.com/rtfm/gdbtut/gdbstep.html
+
 
 (end of file)
 -------------
