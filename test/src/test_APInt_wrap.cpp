@@ -274,6 +274,21 @@ int testWrapBehavior( int argc, char* argv[] )
   result+= testAddWrapBehavior1Word( 
       64, 0xc44b14f908111d7f, false, '+', 0x391fc3be9d90f9b4, false, 
       "0xfd6ad8b7a5a21733", "000" );
+
+  /* tests for multi-word integers */
+
+  cout << "\n" << "test signed 96-bit wrap\n";
+  {
+    uint64_t aaArray[]= {0x193e644c87, 0xc44b14f908111d7f}; 
+    size_t aaArrayLen= 2;
+    uint64_t bbArray[]= {0x6ef7ca9b19, 0x391fc3be9d90f9b4};
+    size_t bbArrayLen= 2;
+    result+= testAddWrapBehaviorMultiWord( 96, 
+	aaArray, aaArrayLen,
+	'+', 
+	bbArray, bbArrayLen,
+	"0x88362ee7a0fd6ad8b7a5a21733", "010" );
+  }
    
   return result;
 }}
