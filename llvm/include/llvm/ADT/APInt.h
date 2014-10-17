@@ -382,6 +382,7 @@ public:
 
   /// \brief determines if signed or unsigned wraparound happened
   /// after a single-word addition
+  // CAS TODO2: if ftn isn't called inside of APInt.h, move to APInt.cpp.
   inline static APInt& checkWrapAfter1WordAdd( 
       APInt& dest, const APInt& left, const APInt& right )
   {
@@ -395,18 +396,21 @@ public:
 
   /// \brief determines if signed or unsigned wraparound happened
   /// after a single-word subtraction
+  // CAS TODO2: if ftn isn't called inside of APInt.h, move to APInt.cpp.
   inline static APInt& checkWrapAfter1WordSub( 
-      APInt& dest, uint64_t left, uint64_t right )
+      APInt& dest, const APInt& left, const APInt& right )
   {
-    dest.unsignedWrapHappened= left < right; // check for -overflow
-    dest.signedWrapHappened= (int64_t)right > 0 ? 
-	(int64_t)dest.VAL > (int64_t)left : 
-	(int64_t)dest.VAL < (int64_t)left;
+    dest.unsignedWrapHappened= left.VAL < right.VAL; // check for -wrap.
+    // CAS TODO2: see if there is a more efficient way to detect signed wrap.
+    dest.signedWrapHappened= right.sgt(0) ?
+	dest.sgt(left) :
+	dest.slt(left);
     return dest;
   }
 
   /// \brief determines if signed or unsigned wraparound happened
   /// after a multi-word addition
+  // CAS TODO2: if ftn isn't called inside of APInt.h, move to APInt.cpp.
   inline static APInt& checkWrapAfterMultiWordAdd( 
       APInt& dest, APInt& left, APInt& right )
   {
@@ -420,6 +424,7 @@ public:
 
   /// \brief determines if signed or unsigned wraparound happened
   /// after a multi-word addition
+  // CAS TODO2: if ftn isn't called inside of APInt.h, move to APInt.cpp.
   inline static APInt& checkWrapAfterMultiWordSub( 
       APInt& dest, APInt& left, APInt& right )
   {
