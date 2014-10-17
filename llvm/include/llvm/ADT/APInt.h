@@ -412,7 +412,7 @@ public:
   /// after a multi-word addition
   // CAS TODO2: if ftn isn't called inside of APInt.h, move to APInt.cpp.
   inline static APInt& checkWrapAfterMultiWordAdd( 
-      APInt& dest, APInt& left, APInt& right )
+      APInt& dest, const APInt& left, const APInt& right )
   {
     dest.unsignedWrapHappened= ( dest.ult(left) || dest.ult(right) );
     dest.signedWrapHappened= right.slt( 0 ) ?
@@ -426,7 +426,7 @@ public:
   /// after a multi-word addition
   // CAS TODO2: if ftn isn't called inside of APInt.h, move to APInt.cpp.
   inline static APInt& checkWrapAfterMultiWordSub( 
-      APInt& dest, APInt& left, APInt& right )
+      APInt& dest, const APInt& left, const APInt& right )
   {
     dest.unsignedWrapHappened= left.ult( right );
     dest.signedWrapHappened= right.sgt(0) ?
