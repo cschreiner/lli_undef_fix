@@ -774,8 +774,8 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
       printf("   instruction's nsw=%d, nuw=%d\n", 
 	  I.hasNoSignedWrap(), I.hasNoUnsignedWrap() );;
       R.IntVal = Src1.IntVal + Src2.IntVal; 
-      R.poisonIfSignedWrap( I.hasNoSignedWrap() );
-      R.poisonIfUnsignedWrap( I.hasNoUnsignedWrap() );
+      R.IntVal.poisonIfSignedWrap( I.hasNoSignedWrap() );
+      R.IntVal.poisonIfUnsignedWrap( I.hasNoUnsignedWrap() );
       printf("   R.IntVal.didSignedWrap=%d, didUnsignedWrap=%d\n", 
 	  R.IntVal.didSignedWrap(), R.IntVal.didUnsignedWrap() );;
       assert ( !(I.hasNoUnsignedWrap() && R.IntVal.didUnsignedWrap() ) );  
@@ -788,8 +788,8 @@ void Interpreter::visitBinaryOperator(BinaryOperator &I) {
       printf("   instruction's nsw=%d, nuw=%d\n", I.hasNoSignedWrap(), 
 	  I.hasNoUnsignedWrap() );;
       R.IntVal = Src1.IntVal - Src2.IntVal; 
-      R.poisonIfSignedWrap( I.hasNoSignedWrap() );
-      R.poisonIfUnsignedWrap( I.hasNoUnsignedWrap() );
+      R.IntVal.poisonIfSignedWrap( I.hasNoSignedWrap() );
+      R.IntVal.poisonIfUnsignedWrap( I.hasNoUnsignedWrap() );
       printf("   R.IntVal.didSignedWrap=%d, didUnsignedWrap=%d\n", 
 	  R.IntVal.didSignedWrap(), R.IntVal.didUnsignedWrap() );;
       printf ("   R's VAL=%lu\n", R.IntVal.getZExtValue() );;
