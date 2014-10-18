@@ -136,12 +136,10 @@ int testAddWrapBehaviorMultiWord( const unsigned numBits,
     assert(0);
   } //switch
 
-  cout << numBits << " bits: \"" << 
-      aa.toString(16, false)  << 
-      "\" " << op << " \"" << 
-      bb.toString(16, false)  << 
-      "\" = \"" << cc.toString(16, false) << 
-      "\"\n";
+  cout << numBits << " bits: \"\n" << 
+      "  " << " " << " \"" << aa.toString(16, false)  << "\"\n" << 
+      "  " << op  << " \"" << bb.toString(16, false)  << "\"\n" <<
+      "  " << "=" << " \"" << cc.toString(16, false)  << "\"\n";
   cout << "   (should be " << expect << ") \n";
   cout << "   (" << aa.flagsToString() << ")+(" << bb.flagsToString() <<
       ") = (" << cc.flagsToString() << 
