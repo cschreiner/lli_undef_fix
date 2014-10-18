@@ -60,7 +60,7 @@ sub generate_random_number
    my( $remaining_bits )= $num_bits;
    while ( $remaining_bits >= 4 )  {
       $rand_num.= sprintf( "%x", rand() * 16 );
-      print "rand_num=\"$rand_num\"\n";;
+      #print "rand_num=\"$rand_num\"\n";;
       $remaining_bits-= 4;
    }
    if ( $remaining_bits > 0 )  {
