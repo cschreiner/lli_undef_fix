@@ -58,15 +58,17 @@ sub generate_random_number
 
    my ( $rand_num )= "";
    my( $remaining_bits )= $num_bits;
-   while ( $remaining_bits > 4 )  {
+   while ( $remaining_bits >= 4 )  {
       $rand_num.= sprintf( "%x", rand() * 16 );
       print "rand_num=\"$rand_num\"\n";;
       $remaining_bits-= 4;
    }
-   $rand_num= sprintf( "%x", rand() * 2** $remaining_bits ) . $rand_num;
-   print $rand_num . "\n";
+   if ( $remaining_bits > 0 )  {
+     $rand_num= sprintf( "%x", rand() * 2** $remaining_bits ) . $rand_num;
+   }
 
    # clean up and return
+   print $rand_num . "\n";
    return 0;
 }}
 
