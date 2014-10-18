@@ -68,7 +68,7 @@ sub generate_random_number
    }
 
    # clean up and return
-   print $rand_num . "\n";
+   print "0x" . $rand_num . "\n";
    return 0;
 }}
 
