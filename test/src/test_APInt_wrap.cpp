@@ -288,6 +288,42 @@ int testWrapBehavior( int argc, char* argv[] )
 	bbArray, bbArrayLen,
 	"0x88362ee7fd6ad8b7a5a21733", "010" );
   }
+  cout << "\n" << "test unsigned 96-bit wrap\n";
+  { // note that these constants are in little-endian format
+    uint64_t aaArray[]= { 0xc567ac43dda812e9, 0x6d6a5c5b }; 
+    size_t aaArrayLen= 2;
+    uint64_t bbArray[]= { 0x00d7cbb761ac0fba, 0xab40d301 };
+    size_t bbArrayLen= 2;
+    result+= testAddWrapBehaviorMultiWord( 96, 
+	aaArray, aaArrayLen,
+	'+', 
+	bbArray, bbArrayLen,
+	"0x18ab2f5cc63f77fb3f5422a3+carry", "001" );
+  }
+  cout << "\n" << "test signed+unsigned 96-bit wrap\n";
+  { // note that these constants are in little-endian format
+    uint64_t aaArray[]= { 0x54fd6be333cac980, 0xa2db75ac }; 
+    size_t aaArrayLen= 2;
+    uint64_t bbArray[]= { 0x903a60c823c5e9d0, 0xbd8eed3e };
+    size_t bbArrayLen= 2;
+    result+= testAddWrapBehaviorMultiWord( 96, 
+	aaArray, aaArrayLen,
+	'+', 
+	bbArray, bbArrayLen,
+	"0x606a62eae537ccab5790b350+carry", "011" );
+  }
+  cout << "\n" << "test 96-bit no wrap\n";
+  { // note that these constants are in little-endian format
+    uint64_t aaArray[]= { 0x3fa7e74f5e3b740a, 0x46b7c159 }; 
+    size_t aaArrayLen= 2;
+    uint64_t bbArray[]= { 0x68622aa4cedc50f1, 0x3822fa6c };
+    size_t bbArrayLen= 2;
+    result+= testAddWrapBehaviorMultiWord( 96, 
+	aaArray, aaArrayLen,
+	'+', 
+	bbArray, bbArrayLen,
+	"0x7edabbc5a80a11f42d17c4fb", "000" );
+  }
    
   return result;
 }}
