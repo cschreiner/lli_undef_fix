@@ -46,3 +46,35 @@ test signed 64-bit nowrap
 64 bits: "C44B14F908111D7Fu" + "391FC3BE9D90F9B4u" = "FD6AD8B7A5A21733"
    (should be 0xfd6ad8b7a5a21733) 
    (psu=000)+(psu=000) = (psu=000, should be "000") 
+
+test signed 96-bit wrap
+96 bits: 
+    "193E644CC44B14F908111D7F"
+  + "6EF7CA9B391FC3BE9D90F9B4"
+  = "88362EE7FD6AD8B7A5A21733"
+  "0x88362ee7fd6ad8b7a5a21733" (expected value) 
+   (psu=000)+(psu=000) = (psu=010, should be "010") 
+
+test unsigned 96-bit wrap
+96 bits: 
+    "6D6A5C5BC567AC43DDA812E9"
+  + "AB40D30100D7CBB761AC0FBA"
+  = "18AB2F5CC63F77FB3F5422A3"
+  "0x18ab2f5cc63f77fb3f5422a3+carry" (expected value) 
+   (psu=000)+(psu=000) = (psu=001, should be "001") 
+
+test signed+unsigned 96-bit wrap
+96 bits: 
+    "A2DB75AC54FD6BE333CAC980"
+  + "BD8EED3E903A60C823C5E9D0"
+  = "606A62EAE537CCAB5790B350"
+  "0x606a62eae537ccab5790b350+carry" (expected value) 
+   (psu=000)+(psu=000) = (psu=011, should be "011") 
+
+test 96-bit no wrap
+96 bits: 
+    "46B7C1593FA7E74F5E3B740A"
+  + "3822FA6C68622AA4CEDC50F1"
+  = "7EDABBC5A80A11F42D17C4FB"
+  "0x7edabbc5a80a11f42d17c4fb" (expected value) 
+   (psu=000)+(psu=000) = (psu=000, should be "000") 
