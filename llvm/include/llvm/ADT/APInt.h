@@ -380,6 +380,23 @@ public:
     if ( unsignedWrapHappened && wrapBanned )  { poisoned= true; }
   }}
 
+  /// \brief flags this instance as poisioned if either of the two
+  /// most recent operands from which it was derived was poisoned.
+  /// Any previous poison value is overwritten, on the theory that
+  /// this instance's numeric value was just overwritten.
+  inline void inheritPoison( APInt& left, APInt& right )
+  {{
+    poisoned= left.poisoned || right.poisoned;
+  }}
+
+  /// \brief flags this instance as poisioned if its most recent
+  /// operand was poisoned.  This is an analog of inheritPoison(
+  /// APInt&, APInt& ) for unary operations.
+  inline void inheritPoison( APInt& right )
+  {{
+    poisoned= right.poisoned;
+  }}
+
   /// \brief determines if signed or unsigned wraparound happened
   /// after a single-word addition
   // CAS TODO2: if ftn isn't called inside of APInt.h, move to APInt.cpp.
