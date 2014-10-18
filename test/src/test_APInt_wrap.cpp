@@ -278,10 +278,10 @@ int testWrapBehavior( int argc, char* argv[] )
   /* tests for multi-word integers */
 
   cout << "\n" << "test signed 96-bit wrap\n";
-  {
-    uint64_t aaArray[]= {0x193e644c87, 0xc44b14f908111d7f}; 
+  { // note that these constants are in little-endian format
+    uint64_t aaArray[]= { 0xc44b14f908111d7f, 0x193e644c }; 
     size_t aaArrayLen= 2;
-    uint64_t bbArray[]= {0x6ef7ca9b19, 0x391fc3be9d90f9b4};
+    uint64_t bbArray[]= { 0x391fc3be9d90f9b4, 0x6ef7ca9b };
     size_t bbArrayLen= 2;
     result+= testAddWrapBehaviorMultiWord( 96, 
 	aaArray, aaArrayLen,
