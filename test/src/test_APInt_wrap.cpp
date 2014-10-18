@@ -347,7 +347,6 @@ int testWrapBehavior( int argc, char* argv[] )
   cout << "\n" << "test unsigned 64-bit wrap\n";
   result+= testAddWrapBehavior1Word( 
       64, 0x885DE58203B96110, true, '-', 0xab1b79340627716f, true, 
-      64, 0xdd426c4dfd91efa1, true, '-', 0xab1b79340627716f, true, 
       "0xdd426c4dfd91efa1+borrow", "001" );
       // NO, the above should NOT trigger a signed wraparound.
 
@@ -407,7 +406,6 @@ int testWrapBehavior( int argc, char* argv[] )
   cout << "\n" << "test 96-bit no wrap\n";
   { // note that these constants are in little-endian format
     uint64_t aaArray[]= { 0xa80a11f42d17c4fb, 0x7edabbc5 }; 
-	"0x7edabbc5 a80a11f42d17c4fb", "000" );
     size_t aaArrayLen= 2;
     uint64_t bbArray[]= { 0x68622aa4cedc50f1, 0x3822fa6c };
     size_t bbArrayLen= 2;
