@@ -136,11 +136,12 @@ int testAddWrapBehaviorMultiWord( const unsigned numBits,
     assert(0);
   } //switch
 
-  cout << numBits << " bits: \"\n" << 
+  cout << numBits << " bits: \n" << 
       "  " << " " << " \"" << aa.toString(16, false)  << "\"\n" << 
       "  " << op  << " \"" << bb.toString(16, false)  << "\"\n" <<
       "  " << "=" << " \"" << cc.toString(16, false)  << "\"\n";
-  cout << "   (should be " << expect << ") \n";
+  cout << 
+      ""   << " " << " \"" << expect << "\" (expected value) \n";
   cout << "   (" << aa.flagsToString() << ")+(" << bb.flagsToString() <<
       ") = (" << cc.flagsToString() << 
       ", should be \"" << flagExpect << "\") \n";
@@ -285,7 +286,7 @@ int testWrapBehavior( int argc, char* argv[] )
 	aaArray, aaArrayLen,
 	'+', 
 	bbArray, bbArrayLen,
-	"0x88362ee7a0fd6ad8b7a5a21733", "010" );
+	"0x88362ee7fd6ad8b7a5a21733", "010" );
   }
    
   return result;
