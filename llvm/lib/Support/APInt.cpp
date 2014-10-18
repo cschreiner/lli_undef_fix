@@ -236,7 +236,9 @@ static bool add_1(uint64_t dest[], uint64_t x[], unsigned len, uint64_t y) {
 
 /// @brief Prefix increment operator. Increments the APInt by one.
 APInt& APInt::operator++() {
-  // asdf: check this for wraparound
+  // CAS TODO2: create test case(s) for this
+  signedWrapHappened= isMaxSignedValue();
+  unsignedWrapHappened= isMaxValue();
   if (isSingleWord()) {
     ++VAL;
   } else {
@@ -251,7 +253,7 @@ APInt& APInt::operator++() {
 /// is 1 if "borrowing" exhausted the digits in x, or 0 if x was not exhausted.
 /// In other words, if y > x then this function returns 1, otherwise 0.
 /// @returns the borrow out of the subtraction
-/* CAS TODO2: how does this function react to overflow? */
+// Wrapping is checked in the calling function.
 static bool sub_1(uint64_t x[], unsigned len, uint64_t y) {
   //printf ( "starting APInt's sub_1(uint64_t[], unsigned, uint64_t)\n" );;
   for (unsigned i = 0; i < len; ++i) {
@@ -270,12 +272,16 @@ static bool sub_1(uint64_t x[], unsigned len, uint64_t y) {
 
 /// @brief Prefix decrement operator. Decrements the APInt by one.
 APInt& APInt::operator--() {
-  /* CAS TODO: check this for wrapping */
+  // CAS TODO2: create test case(s) for this
   //printf ( "starting APInt::operator--()\n" );;
-  if (isSingleWord())
+  signedWrapHappened= isMinSignedValue();
+  unsignedWrapHappened= isMinValue();
+  if (isSingleWord()) {
     --VAL;
-  else
+  } else {
     sub_1(pVal, getNumWords(), 1);
+  }
+
   //printf ( "stopping APInt::operator--()\n" );;
   return clearUnusedBits();
 }
@@ -340,10 +346,14 @@ static bool sub(uint64_t *dest, const uint64_t *x, const uint64_t *y,
 APInt& APInt::operator-=(const APInt& RHS) {
   //printf ( "starting APInt::operator-=(const APInt&)\n" );;
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
-  if (isSingleWord())
+  APInt orig_this( *this );
+  if (isSingleWord())  {
     VAL -= RHS.VAL;
-  else
+    checkWrapAfter1WordSub( *this, orig_this, RHS );
+  } else {
     sub(pVal, pVal, RHS.pVal, getNumWords());
+    checkWrapAfterMultiWordSub( *this, orig_this, RHS );
+  }
   //printf ( "stopping APInt::operator-=(const APInt&)\n" );;
   return clearUnusedBits();
 }
@@ -571,12 +581,7 @@ APInt APInt::operator-(const APInt& RHS) const {
     //	 RHS.VAL, RHS.getActiveBits(), (unsigned long)RHS.BitWidth );;
 
     APInt result (BitWidth, VAL - RHS.VAL);
-    /* note parallels with the multi-word cases, below */
-    // CAS TODO: check this vs the new checkWrapAfter1WordSub(~) method. 
-    result.unsignedWrapHappened= ( VAL < RHS.VAL ); // check for -overflow
-    result.signedWrapHappened= (int64_t)RHS.VAL > 0 ? 
-	(int64_t)result.VAL > (int64_t)VAL : 
-	(int64_t)result.VAL < (int64_t)VAL;
+    checkWrapAfter1WordSub( result, *this, RHS );
     //printf ("   result's VAL=%lu\n", result.VAL );;
     //printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
     //	result.signedWrapHappened, result.unsignedWrapHappened );;
@@ -587,12 +592,8 @@ APInt APInt::operator-(const APInt& RHS) const {
   printf ("   getNumWords()=%d\n", getNumWords() );;
   APInt Result(BitWidth, 0);
   sub(Result.pVal, this->pVal, RHS.pVal, getNumWords());
+  checkWrapAfterMultiWordSub( result, *this, RHS );
 
-  /* note parallels with the single-word cases, above */
-  Result.unsignedWrapHappened= ult( RHS );
-  Result.signedWrapHappened= RHS.sgt(0) ? 
-      Result.sgt(*this) :
-      Result.slt(*this);
   //printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
   //	result.signedWrapHappened, result.unsignedWrapHappened );;
   printf ("stopping APInt::operator-().\n" );;
