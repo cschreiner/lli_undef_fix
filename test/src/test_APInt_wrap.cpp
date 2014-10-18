@@ -331,58 +331,46 @@ int testWrapBehavior( int argc, char* argv[] )
    
   cout << "-------------------------------------------------------------- \n";
   cout << "Subtraction: \n";
+  /* Note that the numbers for the subtraction test steps mirror those
+     for the addition test steps: if an addition step computed a+b=c,
+     then the corresponding subtraction step should compute c-b=a.
+   */
 
   cout << "\n" << "test unsigned 16-bit wrap\n";
   result+= testAddWrapBehavior1Word( 
-      16, 0xfff0, true, '-', 0x0020, true, "16=0x10", "001" );
-  result+= testAddWrapBehavior1Word( 
-      16, 0xfff0, false, '-', 0x0020, false, "16=0x10", "001" );
+      16, 0x0010, true, '-', 0x0020, true, "-16=0xfff0", "001" );
 
   cout << "\n" << "test signed 16-bit wrap\n";
   result+= testAddWrapBehavior1Word( 
-      16, 0x7ff1, true, '-', 0x0031, true, "0x8022", "010" );
-  result+= testAddWrapBehavior1Word( 
-      16, 0x7ff1, false, '-', 0x0031, false, "0x8022", "010" );
+      16, 0x8022, true, '-', 0x0031, true, "0x7ff1", "010" );
 
   cout << "\n" << "test unsigned 64-bit wrap\n";
   result+= testAddWrapBehavior1Word( 
+      64, 0x885DE58203B96110, true, '-', 0xab1b79340627716f, true, 
       64, 0xdd426c4dfd91efa1, true, '-', 0xab1b79340627716f, true, 
-      "0x885DE58203B96110+carry", "001" );
-      // NO, the above should NOT trigger a signed wraparound.
-  result+= testAddWrapBehavior1Word( 
-      64, 0xdd426c4dfd91efa1, false, '-', 0xab1b79340627716f, false, 
-      "0x885DE58203B96110+carry", "001" );
+      "0xdd426c4dfd91efa1+borrow", "001" );
       // NO, the above should NOT trigger a signed wraparound.
 
   cout << "\n" << "test signed 64-bit +wrap\n";
   result+= testAddWrapBehavior1Word( 
-      64, 0x489cb8cc34cea777, true, '-', 0x7eff7f26ccacae73, true, 
-      "0xc79c37f3017b55ea", "010" );
-  result+= testAddWrapBehavior1Word( 
-      64, 0x489cb8cc34cea777, false, '-', 0x7eff7f26ccacae73, false, 
-      "0xc79c37f3017b55ea", "010" );
+      64, 0xc79c37f3017b55ea, true, '-', 0x7eff7f26ccacae73, true, 
+      "0x489cb8cc34cea777", "010" );
 
   cout << "\n" << "test signed 64-bit -wrap\n";
   result+= testAddWrapBehavior1Word( 
-      64, 0xc376c6cc749c9312, true, '-', 0x9872e5300d9f57e4, true, 
-      "0x5be9abfc823beaf6+carry", "011" );
-  result+= testAddWrapBehavior1Word( 
-      64, 0xc376c6cc749c9312, false, '-', 0x9872e5300d9f57e4, false, 
-      "0x5be9abfc823beaf6+carry", "011" );
+      64, 0x5be9abfc823beaf6, true, '-', 0x9872e5300d9f57e4, true, 
+      "0xc376c6cc749c9312+borrow", "011" );
 
   cout << "\n" << "test signed 64-bit nowrap\n";
   result+= testAddWrapBehavior1Word( 
-      64, 0xc44b14f908111d7f, true, '-', 0x391fc3be9d90f9b4, true, 
-      "0xfd6ad8b7a5a21733", "000" );
-  result+= testAddWrapBehavior1Word( 
-      64, 0xc44b14f908111d7f, false, '-', 0x391fc3be9d90f9b4, false, 
-      "0xfd6ad8b7a5a21733", "000" );
+      64, 0xfd6ad8b7a5a21733, true, '-', 0x391fc3be9d90f9b4, true, 
+      "0xc44b14f908111d7f", "000" );
 
   /* tests for multi-word integers */
   cout << ".......................................... \n";
   cout << "\n" << "test signed 96-bit wrap\n";
   { // note that these constants are in little-endian format
-    uint64_t aaArray[]= { 0xc44b14f908111d7f, 0x193e644c }; 
+    uint64_t aaArray[]= { 0xfd6ad8b7a5a21733, 0x88362ee7}; 
     size_t aaArrayLen= 2;
     uint64_t bbArray[]= { 0x391fc3be9d90f9b4, 0x6ef7ca9b };
     size_t bbArrayLen= 2;
@@ -390,11 +378,11 @@ int testWrapBehavior( int argc, char* argv[] )
 	aaArray, aaArrayLen,
 	'-', 
 	bbArray, bbArrayLen,
-	"0x88362ee7fd6ad8b7a5a21733", "010" );
+	"0x193e644cc44b14f908111d7f", "010" );
   }
   cout << "\n" << "test unsigned 96-bit wrap\n";
   { // note that these constants are in little-endian format
-    uint64_t aaArray[]= { 0xc567ac43dda812e9, 0x6d6a5c5b }; 
+    uint64_t aaArray[]= { 0xc63f77fb3f5422a3, 0x18ab2f5c }; 
     size_t aaArrayLen= 2;
     uint64_t bbArray[]= { 0x00d7cbb761ac0fba, 0xab40d301 };
     size_t bbArrayLen= 2;
@@ -402,11 +390,11 @@ int testWrapBehavior( int argc, char* argv[] )
 	aaArray, aaArrayLen,
 	'-', 
 	bbArray, bbArrayLen,
-	"0x18ab2f5cc63f77fb3f5422a3+carry", "001" );
+	"0x6d6a5c5bc567ac43dda812e9+borrow", "001" );
   }
   cout << "\n" << "test signed+unsigned 96-bit wrap\n";
   { // note that these constants are in little-endian format
-    uint64_t aaArray[]= { 0x54fd6be333cac980, 0xa2db75ac }; 
+    uint64_t aaArray[]= { 0xe537ccab5790b350, 0x606a62ea }; 
     size_t aaArrayLen= 2;
     uint64_t bbArray[]= { 0x903a60c823c5e9d0, 0xbd8eed3e };
     size_t bbArrayLen= 2;
@@ -414,11 +402,12 @@ int testWrapBehavior( int argc, char* argv[] )
 	aaArray, aaArrayLen,
 	'-', 
 	bbArray, bbArrayLen,
-	"0x606a62eae537ccab5790b350+carry", "011" );
+	"0xa2db75ac54fd6be333cac980+borrow", "011" );
   }
   cout << "\n" << "test 96-bit no wrap\n";
   { // note that these constants are in little-endian format
-    uint64_t aaArray[]= { 0x3fa7e74f5e3b740a, 0x46b7c159 }; 
+    uint64_t aaArray[]= { 0xa80a11f42d17c4fb, 0x7edabbc5 }; 
+	"0x7edabbc5 a80a11f42d17c4fb", "000" );
     size_t aaArrayLen= 2;
     uint64_t bbArray[]= { 0x68622aa4cedc50f1, 0x3822fa6c };
     size_t bbArrayLen= 2;
@@ -426,7 +415,7 @@ int testWrapBehavior( int argc, char* argv[] )
 	aaArray, aaArrayLen,
 	'-', 
 	bbArray, bbArrayLen,
-	"0x7edabbc5a80a11f42d17c4fb", "000" );
+	"0x46b7c1593fa7e74f5e3b740a", "000" );
   }
   cout << "\n";
 
