@@ -592,7 +592,7 @@ APInt APInt::operator-(const APInt& RHS) const {
   printf ("   getNumWords()=%d\n", getNumWords() );;
   APInt Result(BitWidth, 0);
   sub(Result.pVal, this->pVal, RHS.pVal, getNumWords());
-  checkWrapAfterMultiWordSub( result, *this, RHS );
+  checkWrapAfterMultiWordSub( Result, *this, RHS );
 
   //printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
   //	result.signedWrapHappened, result.unsignedWrapHappened );;
