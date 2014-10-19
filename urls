@@ -60,6 +60,10 @@ Debugging
 Using gdb: How do I watch the execution of my program?
 http://www.unknownroad.com/rtfm/gdbtut/gdbstep.html
 
+git
+---
+git and subversion (apparently used to access LLVM revision control via git)
+http://git-scm.com/book/en/Git-and-Other-Systems-Git-and-Subversion
 
 (end of file)
 -------------
