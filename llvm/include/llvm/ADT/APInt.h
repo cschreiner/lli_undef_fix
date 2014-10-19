@@ -691,6 +691,7 @@ public:
   static APInt getSplat(unsigned NewLen, const APInt &V) {
     assert(NewLen >= V.getBitWidth() && "Can't splat to smaller bit width!");
 
+    // CAS note: wrap & poison bits will be inherited via zextOrSelf(~).
     APInt Val = V.zextOrSelf(NewLen);
     for (unsigned I = V.getBitWidth(); I < NewLen; I <<= 1)
       Val |= Val << I;
@@ -729,8 +730,12 @@ public:
   /// \brief Postfix increment operator.
   ///
   /// \returns a new APInt value representing *this incremented by one
+  /// CAS TODO3: is the above comment accurate?  *this gets incremented by 
+  /// one, not the returned instance.
   const APInt operator++(int) {
     APInt API(*this);
+    signedWrapHappened= isSignedMaxValue();
+    unsignedWrapHappened= isMaxValue();
     ++(*this);
     return API;
   }
@@ -743,8 +748,13 @@ public:
   /// \brief Postfix decrement operator.
   ///
   /// \returns a new APInt representing *this decremented by one.
+  /// CAS TODO3: is the above comment accurate?  *this gets decremented by 
+  /// one, not the returned instance.
   const APInt operator--(int) {
     APInt API(*this);
+    signedWrapHappened= isSignedMaxValue();
+    unsignedWrapHappened= isMaxValue();
+   
     --(*this);
     return API;
   }
@@ -797,12 +807,13 @@ public:
   APInt &operator=(const APInt &RHS) {
     //printf( "starting APInt::operator=(const APInt &).\n" );;
     // If the bitwidths are the same, we can avoid mucking with memory
+    signedWrapHappened= RHS.signedWrapHappened;
+    unsignedWrapHappened= RHS.unsignedWrapHappened;
+    poisoned= RHS.poisoned;
     if (isSingleWord() && RHS.isSingleWord()) {
       //printf( "   is a single word\n" );;
       VAL = RHS.VAL;
       BitWidth = RHS.BitWidth;
-      signedWrapHappened= RHS.signedWrapHappened;
-      unsignedWrapHappened= RHS.unsignedWrapHappened;
       //printf( "stopping APInt::operator=(const APInt &).\n" );;
       return clearUnusedBits();
     }
@@ -816,6 +827,9 @@ public:
     //printf( "starting APInt::operator=(const APInt &&).\n" );;
     //printf( "   &src addr=%p, dest addr=%p, .\n", 
     //	    (void*)(&that), (void*)(this) );;
+    signedWrapHappened= RHS.signedWrapHappened;
+    unsignedWrapHappened= RHS.unsignedWrapHappened;
+    poisoned= RHS.poisoned;
     if (!isSingleWord()) {
       // The MSVC STL shipped in 2013 requires that self move assignment be a
       // no-op.  Otherwise algorithms like stable_sort will produce answers
@@ -829,8 +843,6 @@ public:
     //printf ("   src's address=%p.\n", (void*)(&that) );;
     //printf ("   src's VAL=%lu\n", that.VAL );;
     VAL = that.VAL;
-    signedWrapHappened= that.signedWrapHappened;
-    unsignedWrapHappened= that.unsignedWrapHappened;
 
     // If 'this == &that', avoid zeroing our own bitwidth by storing to 'that'
     // first.
@@ -934,6 +946,7 @@ public:
   /// \returns An APInt value representing the bitwise AND of *this and RHS.
   APInt operator&(const APInt &RHS) const {
     assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
+    inheritPoison( RHS );
     if (isSingleWord())
       return APInt(getBitWidth(), VAL & RHS.VAL);
     return AndSlowCase(RHS);
@@ -949,6 +962,7 @@ public:
   /// \returns An APInt value representing the bitwise OR of *this and RHS.
   APInt operator|(const APInt &RHS) const {
     assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
+    inheritPoison( RHS );
     if (isSingleWord())
       return APInt(getBitWidth(), VAL | RHS.VAL);
     return OrSlowCase(RHS);
@@ -971,6 +985,7 @@ public:
   /// \returns An APInt value representing the bitwise XOR of *this and RHS.
   APInt operator^(const APInt &RHS) const {
     assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
+    inheritPoison( RHS );
     if (isSingleWord())
       return APInt(BitWidth, VAL ^ RHS.VAL);
     return XorSlowCase(RHS);
@@ -1027,6 +1042,9 @@ public:
   ///
   /// Left-shift this APInt by shiftAmt.
   APInt LLVM_ATTRIBUTE_UNUSED_RESULT shl(unsigned shiftAmt) const {
+    /* CAS TODO: does this check for wrap meet spec, or do we need to have it
+       return a 0'd out APInt and set a wrap flag? 
+    */
     assert(shiftAmt <= BitWidth && "Invalid shift amount");
     if (isSingleWord()) {
       if (shiftAmt >= BitWidth)
@@ -1371,6 +1389,9 @@ public:
 
   /// \brief Set every bit to 1.
   void setAllBits() {
+    signedWrapHappened= false;
+    unsignedWrapHappened= false;
+    poisoned= false;
     if (isSingleWord())
       VAL = UINT64_MAX;
     else {
@@ -1389,6 +1410,9 @@ public:
 
   /// \brief Set every bit to 0.
   void clearAllBits() {
+    signedWrapHappened= false;
+    unsignedWrapHappened= false;
+    poisoned= false;
     if (isSingleWord())
       VAL = 0;
     else
@@ -1423,9 +1447,8 @@ public:
 
   /// \brief Return the number of bits in the APInt.
   ///
-  /// CAS TODO2: does this return the number of bits in this
-  /// instance's official width, or the number of bits that are used?
-  /// (Some other functions work with the number of bits that are used.)
+  /// CAS Note: this returns the actual number of "active" bits in the APInt,
+  /// not the number of bits in all words used to store the value.
   unsigned getBitWidth() const { return BitWidth; }
 
   /// \brief Get the number of words.
