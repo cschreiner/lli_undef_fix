@@ -1300,6 +1300,7 @@ APInt APInt::lshr(unsigned shiftAmt) const {
 /// @brief Left-shift function.
 APInt APInt::shl(const APInt &shiftAmt) const {
   // It's undefined behavior in C to shift by BitWidth or greater.
+  /* CAS TODO: add a check for wrap and/or poison */
   return shl((unsigned)shiftAmt.getLimitedValue(BitWidth));
 }
 
@@ -1784,6 +1785,9 @@ void APInt::divide(const APInt LHS, unsigned lhsWords,
                    APInt *Quotient, APInt *Remainder)
 {
   assert(lhsWords >= rhsWords && "Fractional result");
+  /* CAS TODO2: do something here to see if we need to check for wraparound */
+  Quotient->inheritPoison( LHS, RHS );
+  Remainder->inheritPoison( LHS, RHS );
 
   // First, compose the values into an array of 32-bit words instead of
   // 64-bit words. This is a necessity of both the "short division" algorithm
@@ -2278,6 +2282,11 @@ void APInt::toString(SmallVectorImpl<char> &Str, unsigned Radix,
         llvm_unreachable("Invalid radix!");
     }
   }
+
+  // re-initialize flags
+  signedWrapHappened= false;
+  unsignedWrapHappened= false;
+  poisoned= false;
 
   // First, check for a zero value and just short circuit the logic below.
   if (*this == 0) {
