@@ -1,0 +1,7 @@
+Questions for John et al:
+
+[ ] should _all_ APInt operators inherit poison values from their APInt
+operands, or just ones designated in the LLVM Intemediate Lang spec as
+capable of generating poison values?
+
+
