@@ -4,4 +4,6 @@ Questions for John et al:
 operands, or just ones designated in the LLVM Intemediate Lang spec as
 capable of generating poison values?
 
+[ ] possibility of other bugs in APInt: example: APInt.cpp, method
+	initSlowCase( unsigned, uint64_t, bool): argument numBits is unused.
 
