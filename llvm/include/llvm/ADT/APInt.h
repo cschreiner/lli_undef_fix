@@ -1406,6 +1406,7 @@ public:
   /// \brief Set a given bit to 1.
   ///
   /// Set the given bit to 1 whose position is given as "bitPosition".
+  /// Wraparound and poison flags are unchanged.
   void setBit(unsigned bitPosition);
 
   /// \brief Set every bit to 0.
@@ -1422,9 +1423,11 @@ public:
   /// \brief Set a given bit to 0.
   ///
   /// Set the given bit to 0 whose position is given as "bitPosition".
+  /// Wraparound and poison flags are unchanged.
   void clearBit(unsigned bitPosition);
 
   /// \brief Toggle every bit to its opposite value.
+  /// Wraparound and poison flags are unchanged.
   void flipAllBits() {
     if (isSingleWord())
       VAL ^= UINT64_MAX;
@@ -1439,6 +1442,7 @@ public:
   ///
   /// Toggle a given bit to its opposite value whose position is given
   /// as "bitPosition".
+  /// Wraparound and poison flags are unchanged.
   void flipBit(unsigned bitPosition);
 
   /// @}
