@@ -107,6 +107,9 @@ void APInt::initFromArray(ArrayRef<uint64_t> bigVal) {
      the original value of this is a single word, not whether the new
      value in bigVal is a single word.  Right?
    */
+  signedWrapHappened= false;
+  unsignedWrapHappened= false;
+  poisoned= false;
   if (isSingleWord())
     VAL = bigVal[0];
   else {
@@ -192,6 +195,9 @@ APInt& APInt::AssignSlowCase(const APInt& RHS) {
 
 APInt& APInt::operator=(uint64_t RHS) {
   //printf( "starting APInt::operator=(uint64_t)\n" );;
+  signedWrapHappened= RHS.signedWrapHappened;
+  unsignedWrapHappened= RHS.unsignedWrapHappened;
+  poisoned= RHS.poisoned;
   if (isSingleWord())
     VAL = RHS;
   else {
@@ -219,9 +225,9 @@ void APInt::Profile(FoldingSetNodeID& ID) const {
 /// add_1 - This function adds a single "digit" integer, y, to the multiple
 /// "digit" integer array,  x[]. x[] is modified to reflect the addition and
 /// 1 is returned if there is a carry out, otherwise 0 is returned.
+/// The caller method is responsible for checking for wraparound and poison. 
 /// @returns the carry of the addition.
 static bool add_1(uint64_t dest[], uint64_t x[], unsigned len, uint64_t y) {
-  /* CAS TODO2: note that wraparound is checked at the caller function */
   for (unsigned i = 0; i < len; ++i) {
     dest[i] = y + x[i];
     if (dest[i] < y)
@@ -288,11 +294,11 @@ APInt& APInt::operator--() {
 
 /// add - This function adds the integer array x to the integer array Y and
 /// places the result in dest.
+/// Wraparound and poison flags are checked by the caller method.
 /// @returns the carry out from the addition
 /// @brief General addition of 64-bit integer arrays
 static bool add(uint64_t *dest, const uint64_t *x, const uint64_t *y,
                 unsigned len) {
-  /* CAS TODO2: note that wraparound is checked at the caller function */
   bool carry = false;
   for (unsigned i = 0; i< len; ++i) {
     uint64_t limit = std::min(x[i],y[i]); // must come first in case dest == x
@@ -319,10 +325,12 @@ APInt& APInt::operator+=(const APInt& RHS) {
     add(pVal, pVal, RHS.pVal, getNumWords());
     checkWrapAfterMultiWordAdd( *this, orig_this, RHS ); 
   }
+  inheritPoison( orig_this, RHS );
   return clearUnusedBits();
 }
 
 /// Subtracts the integer array y from the integer array x
+/// Wraparound and poison flags are checked by the caller method.
 /// @returns returns the borrow out.
 /// @brief Generalized subtraction of 64-bit integer arrays.
 static bool sub(uint64_t *dest, const uint64_t *x, const uint64_t *y,
@@ -355,11 +363,13 @@ APInt& APInt::operator-=(const APInt& RHS) {
     checkWrapAfterMultiWordSub( *this, orig_this, RHS );
   }
   //printf ( "stopping APInt::operator-=(const APInt&)\n" );;
+  inheritPoison( orig_this, RHS );
   return clearUnusedBits();
 }
 
 /// Multiplies an integer array, x, by a uint64_t integer and places the result
 /// into dest.
+/// Wraparound and poison flags are checked by the calling method.
 /// @returns the carry out of the multiplication.
 /// @brief Multiply a multi-digit APInt by a single digit (64-bit) integer.
 static uint64_t mul_1(uint64_t dest[], uint64_t x[], unsigned len, uint64_t y) {
@@ -395,6 +405,7 @@ static uint64_t mul_1(uint64_t dest[], uint64_t x[], unsigned len, uint64_t y) {
 
 /// Multiplies integer array x by integer array y and stores the result into
 /// the integer array dest. Note that dest's size must be >= xlen + ylen.
+/// Wraparound and poison flags are checked by the calling method.
 /// @brief Generalized multiplicate of integer arrays.
 static void mul(uint64_t dest[], uint64_t x[], unsigned xlen, uint64_t y[],
                 unsigned ylen) {
@@ -428,6 +439,8 @@ static void mul(uint64_t dest[], uint64_t x[], unsigned xlen, uint64_t y[],
 
 APInt& APInt::operator*=(const APInt& RHS) {
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
+  // CAS TODO: check for overflow here
+  inheritPoison( *this, RHS );
   if (isSingleWord()) {
     VAL *= RHS.VAL;
     clearUnusedBits();
@@ -470,6 +483,7 @@ APInt& APInt::operator*=(const APInt& RHS) {
 
 APInt& APInt::operator&=(const APInt& RHS) {
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
+  inheritPoison( *this, RHS );
   if (isSingleWord()) {
     VAL &= RHS.VAL;
     return *this;
@@ -482,6 +496,7 @@ APInt& APInt::operator&=(const APInt& RHS) {
 
 APInt& APInt::operator|=(const APInt& RHS) {
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
+  inheritPoison( *this, RHS );
   if (isSingleWord()) {
     VAL |= RHS.VAL;
     return *this;
@@ -494,6 +509,7 @@ APInt& APInt::operator|=(const APInt& RHS) {
 
 APInt& APInt::operator^=(const APInt& RHS) {
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
+  inheritPoison( *this, RHS );
   if (isSingleWord()) {
     VAL ^= RHS.VAL;
     this->clearUnusedBits();
@@ -505,6 +521,7 @@ APInt& APInt::operator^=(const APInt& RHS) {
   return clearUnusedBits();
 }
 
+/// Wraparound and poison flags are checked by the calling method.
 APInt APInt::AndSlowCase(const APInt& RHS) const {
   unsigned numWords = getNumWords();
   uint64_t* val = getMemory(numWords);
@@ -513,6 +530,7 @@ APInt APInt::AndSlowCase(const APInt& RHS) const {
   return APInt(val, getBitWidth());
 }
 
+/// Wraparound and poison flags are checked by the calling method.
 APInt APInt::OrSlowCase(const APInt& RHS) const {
   unsigned numWords = getNumWords();
   uint64_t *val = getMemory(numWords);
@@ -521,6 +539,7 @@ APInt APInt::OrSlowCase(const APInt& RHS) const {
   return APInt(val, getBitWidth());
 }
 
+/// Wraparound and poison flags are checked by the calling method.
 APInt APInt::XorSlowCase(const APInt& RHS) const {
   unsigned numWords = getNumWords();
   uint64_t *val = getMemory(numWords);
@@ -533,10 +552,14 @@ APInt APInt::XorSlowCase(const APInt& RHS) const {
 
 APInt APInt::operator*(const APInt& RHS) const {
   assert(BitWidth == RHS.BitWidth && "Bit widths must be the same");
-  if (isSingleWord())
-    return APInt(BitWidth, VAL * RHS.VAL);
+  if (isSingleWord())  {
+    APInt result(BitWidth, VAL * RHS.VAL);
+    result.inheritPoison( *this, RHS ); 
+    return result;
+  }
   APInt Result(*this);
   Result *= RHS;
+  // wrap and poison flags are checked in operator*(~).
   return Result;
 }
 
@@ -546,6 +569,7 @@ APInt APInt::operator+(const APInt& RHS) const {
     // assume unsigned
     APInt result= APInt(BitWidth, VAL + RHS.VAL);
     checkWrapAfter1WordAdd( result, *this, RHS );
+    result.inheritPoison( *this, RHS );
 
     #if 0 //;;
       printf( "   " 
@@ -567,6 +591,7 @@ APInt APInt::operator+(const APInt& RHS) const {
       Result.sgt( *this ) :
       Result.slt( *this );
   checkWrapAfterMultiWordAdd( Result, *this, RHS );
+  Result.inheritPoison( *this, RHS );
   return Result.clearUnusedBits();
 }
 
@@ -582,6 +607,7 @@ APInt APInt::operator-(const APInt& RHS) const {
 
     APInt result (BitWidth, VAL - RHS.VAL);
     checkWrapAfter1WordSub( result, *this, RHS );
+    result.inheritPoison( *this, RHS );
     //printf ("   result's VAL=%lu\n", result.VAL );;
     //printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
     //	result.signedWrapHappened, result.unsignedWrapHappened );;
@@ -593,6 +619,7 @@ APInt APInt::operator-(const APInt& RHS) const {
   APInt Result(BitWidth, 0);
   sub(Result.pVal, this->pVal, RHS.pVal, getNumWords());
   checkWrapAfterMultiWordSub( Result, *this, RHS );
+  Result.inheritPoison( *this, RHS );
 
   //printf ("   result's signedWrapHappened=%d, unsignedWrapHappened=%d\n", 
   //	result.signedWrapHappened, result.unsignedWrapHappened );;
@@ -712,7 +739,7 @@ void APInt::clearBit(unsigned bitPosition) {
     pVal[whichWord(bitPosition)] &= ~maskBit(bitPosition);
 }
 
-/// @brief Toggle every bit to its opposite value.
+/// @brief Toggle the specified bit to its opposite value.
 
 /// Toggle a given bit to its opposite value whose position is given
 /// as "bitPosition".
@@ -1143,6 +1170,9 @@ APInt APInt::sextOrSelf(unsigned width) const {
   return *this;
 }
 
+/* CAS TODO: asdf got to here when inserting inheritPoison(~) calls
+   and examining for missed wraparound detection.
+ */
 /// Arithmetic right-shift this APInt by shiftAmt.
 /// @brief Arithmetic right-shift function.
 APInt APInt::ashr(const APInt &shiftAmt) const {
